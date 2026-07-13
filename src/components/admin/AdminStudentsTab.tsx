@@ -1,33 +1,65 @@
 "use client";
 import React, { useState } from 'react';
-import { Plus, Search, User, Phone, Mail, BookOpen, Calendar, Edit2, Trash2, Upload, CreditCard, FileSpreadsheet, IdCard, AlertCircle } from 'lucide-react';
+import { Plus, Search, User, Phone, Mail, BookOpen, Calendar, Edit2, Trash2, Upload, CreditCard, FileSpreadsheet, IdCard, AlertCircle, Download } from 'lucide-react';
 import { Student, Course } from '@/types';
 import { useToast } from '@/components/Toast';
-import { downloadStudentIdPdf, downloadFeeSlipPdf } from '@/lib/pdf';
+import { downloadStudentIdPdf, downloadFeeSlipPdf, downloadCertificatePdf, downloadResultsPdf } from '@/lib/pdf';
+import { createClient } from '@/utils/supabase/client';
+import { generateQrCode } from '@/lib/qr';
+import { useAdminContext } from '@/components/admin/AdminDataContext';
 
-interface AdminStudentsTabProps { courses: Course[]; students: Student[]; onSaveStudents: (updated: Student[]) => void; }
+interface AdminStudentsTabProps {
+  courses: Course[];
+  students: Student[];
+  onSaveStudents: (updated: Student[]) => void;
+}
 
 export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, students, onSaveStudents }) => {
   const { showToast } = useToast();
+  const supabase = createClient();
+  const { settings } = useAdminContext();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourseFilter, setSelectedCourseFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
-  const [formName, setFormName] = useState(''); const [formRollNumber, setFormRollNumber] = useState(''); const [formEmail, setFormEmail] = useState(''); const [formPhone, setFormPhone] = useState('');
-  const [formCourseId, setFormCourseId] = useState(''); const [formFeeAmount, setFormFeeAmount] = useState<number>(0); const [formFeePaid, setFormFeePaid] = useState<number>(0);
-  const [formRegDate, setFormRegDate] = useState(() => new Date().toISOString().split('T')[0]); const [formValidTill, setFormValidTill] = useState(() => { const d = new Date(); d.setMonth(d.getMonth()+3); return d.toISOString().split('T')[0]; });
+  const [formName, setFormName] = useState(''); const [formRollNumber, setFormRollNumber] = useState('');
+  const [formEmail, setFormEmail] = useState(''); const [formPhone, setFormPhone] = useState('');
+  const [formCourseId, setFormCourseId] = useState(''); const [formFeeAmount, setFormFeeAmount] = useState<number>(0);
+  const [formFeePaid, setFormFeePaid] = useState<number>(0);
+  const [formRegDate, setFormRegDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [formValidTill, setFormValidTill] = useState(() => { const d = new Date(); d.setMonth(d.getMonth()+3); return d.toISOString().split('T')[0]; });
   const [formPhotoBase64, setFormPhotoBase64] = useState(''); const [formBranchId, setFormBranchId] = useState(''); const [formSectionId, setFormSectionId] = useState('');
 
-  // Attendance & Results states
   const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
   const [attendanceDate, setAttendanceDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [attendanceMap, setAttendanceMap] = useState<Record<string, 'Present'|'Absent'|'Late'>>({});
   const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
   const [resultsStudent, setResultsStudent] = useState<Student | null>(null);
-  const [examName, setExamName] = useState(''); const [subject, setSubject] = useState(''); const [marksObtained, setMarksObtained] = useState<number>(0); const [maxMarks, setMaxMarks] = useState<number>(100); const [remarks, setRemarks] = useState('');
+  const [examName, setExamName] = useState(''); const [subject, setSubject] = useState('');
+  const [marksObtained, setMarksObtained] = useState<number>(0); const [maxMarks, setMaxMarks] = useState<number>(100);
+  const [remarks, setRemarks] = useState('');
+
+  const fetchFullStudent = async (id: string): Promise<Student> => {
+    const { data: stud } = await supabase.from("students").select("*").eq("id", id).single();
+    const [{ data: att }, { data: res }, { data: led }] = await Promise.all([
+      supabase.from("student_attendance").select("*").eq("student_id", id),
+      supabase.from("student_results").select("*").eq("student_id", id),
+      supabase.from("fee_ledger_entries").select("*").eq("student_id", id)
+    ]);
+    return {
+      ...stud,
+      attendance_records: att?.map(a => ({ date: a.attendance_date, status: a.status })) || [],
+      results_records: res?.map(r => ({ exam_name: r.exam_name, subject: r.subject, marks_obtained: r.marks_obtained, max_marks: r.max_marks, remarks: r.remarks })) || [],
+      fee_ledgers: led?.map(l => ({ id: l.id, date: l.payment_date, amount: l.amount, collected_by: l.collected_by, payment_mode: l.payment_mode, remarks: l.remarks })) || []
+    };
+  };
 
   const filteredStudents = students.filter(s => {
-    const matchSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.roll_number.toLowerCase().includes(searchQuery.toLowerCase()) || s.email.toLowerCase().includes(searchQuery.toLowerCase()) || s.phone.includes(searchQuery);
+    const matchSearch = s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.roll_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.phone.includes(searchQuery);
     const matchCourse = !selectedCourseFilter || s.course_id === selectedCourseFilter;
     return matchSearch && matchCourse;
   });
@@ -48,19 +80,20 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
   };
 
   const handleOpenAddModal = () => {
-    setEditingStudent(null); setFormName(''); setFormRollNumber(`SLM-${new Date().getFullYear()}-${String(students.length+1).padStart(3,'0')}`); setFormEmail(''); setFormPhone('');
-    setFormCourseId(courses[0]?.id || ''); setFormFeeAmount(courses[0]?.fee_numeric || 0); setFormFeePaid(0); setFormRegDate(new Date().toISOString().split('T')[0]); const d = new Date(); d.setMonth(d.getMonth()+3); setFormValidTill(d.toISOString().split('T')[0]);
-    setFormPhotoBase64(''); setFormBranchId(''); setFormSectionId('');
-    setIsModalOpen(true);
+    setEditingStudent(null); setFormName(''); setFormRollNumber(`SLM-${new Date().getFullYear()}-${String(students.length+1).padStart(3,'0')}`);
+    setFormEmail(''); setFormPhone(''); setFormCourseId(courses[0]?.id || ''); setFormFeeAmount(courses[0]?.fee_numeric || 0);
+    setFormFeePaid(0); setFormRegDate(new Date().toISOString().split('T')[0]);
+    const d = new Date(); d.setMonth(d.getMonth()+3); setFormValidTill(d.toISOString().split('T')[0]);
+    setFormPhotoBase64(''); setFormBranchId(''); setFormSectionId(''); setIsModalOpen(true);
   };
 
-  const handleOpenEditModal = (student: Student) => {
-    setEditingStudent(student);
-    setFormName(student.name); setFormRollNumber(student.roll_number); setFormEmail(student.email); setFormPhone(student.phone);
-    setFormCourseId(student.course_id); setFormFeeAmount(student.fee_amount); setFormFeePaid(student.fee_paid);
-    setFormRegDate(student.reg_date); setFormValidTill(student.valid_till); setFormPhotoBase64(student.photo_base64 || '');
-    setFormBranchId(student.branch_id || ''); setFormSectionId(student.section_id || '');
-    setIsModalOpen(true);
+  const handleOpenEditModal = async (student: Student) => {
+    const full = await fetchFullStudent(student.id);
+    setEditingStudent(full);
+    setFormName(full.name); setFormRollNumber(full.roll_number); setFormEmail(full.email); setFormPhone(full.phone);
+    setFormCourseId(full.course_id); setFormFeeAmount(full.fee_amount); setFormFeePaid(full.fee_paid);
+    setFormRegDate(full.reg_date); setFormValidTill(full.valid_till); setFormPhotoBase64(full.photo_base64 || '');
+    setFormBranchId(full.branch_id || ''); setFormSectionId(full.section_id || ''); setIsModalOpen(true);
   };
 
   const handleSaveStudentSubmit = (e: React.FormEvent) => {
@@ -82,54 +115,90 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
     showToast('Student saved','success');
   };
 
-  const handleDeleteStudent = (id: string, name: string) => {
-    if(window.confirm(`Delete ${name}?`)) { onSaveStudents(students.filter(s => s.id !== id)); showToast('Deleted','info'); }
+  const handleDeleteStudent = async (id: string, name: string) => {
+    if(window.confirm(`Delete ${name}?`)) {
+      await supabase.from("students").delete().eq("id", id);
+      onSaveStudents(students.filter(s => s.id !== id));
+      showToast('Deleted','info');
+    }
   };
 
-  const handleSaveAttendance = () => {
-    const updated = students.map(s => {
-      if(attendanceMap[s.id] !== undefined) {
-        const records = s.attendance_records || [];
-        const filtered = records.filter(r => r.date !== attendanceDate);
-        filtered.push({ date: attendanceDate, status: attendanceMap[s.id] });
-        return { ...s, attendance_records: filtered };
+  const handleSaveAttendance = async () => {
+    const updates = filteredStudents.map(async s => {
+      if (attendanceMap[s.id] !== undefined) {
+        const { error } = await supabase.from("student_attendance").upsert({
+          id: `${s.id}_${attendanceDate}`,
+          student_id: s.id,
+          attendance_date: attendanceDate,
+          status: attendanceMap[s.id]
+        }, { onConflict: 'student_id,attendance_date' });
+        if (error) console.error(error);
       }
-      return s;
     });
-    onSaveStudents(updated);
+    await Promise.all(updates);
     setIsAttendanceModalOpen(false);
     showToast('Attendance saved','success');
   };
 
-  const handleAddResult = () => {
+  const handleAddResult = async () => {
     if(!resultsStudent || !examName.trim() || !subject.trim() || maxMarks <= 0) { showToast('Fill all fields','error'); return; }
     if(marksObtained > maxMarks) { showToast('Marks > max','error'); return; }
-    const newRecord = { exam_name: examName.trim(), subject: subject.trim(), marks_obtained: marksObtained, max_marks: maxMarks, remarks: remarks.trim() };
-    const updatedRecords = [...(resultsStudent.results_records || []), newRecord];
-    const updatedStudent = { ...resultsStudent, results_records: updatedRecords };
+    const newRecord = {
+      id: `${resultsStudent.id}_${examName}_${subject}`,
+      student_id: resultsStudent.id,
+      exam_name: examName.trim(),
+      subject: subject.trim(),
+      marks_obtained: marksObtained,
+      max_marks: maxMarks,
+      remarks: remarks.trim()
+    };
+    const { error } = await supabase.from("student_results").upsert(newRecord);
+    if (error) { showToast('Error saving result','error'); return; }
+
+    const updatedResults = [...(resultsStudent.results_records || []), {
+      exam_name: examName.trim(), subject: subject.trim(), marks_obtained: marksObtained, max_marks: maxMarks, remarks: remarks.trim()
+    }];
+    const updatedStudent = { ...resultsStudent, results_records: updatedResults };
+    setResultsStudent(updatedStudent);
     const updatedList = students.map(s => s.id === resultsStudent.id ? updatedStudent : s);
     onSaveStudents(updatedList);
-    setResultsStudent(updatedStudent);
     setExamName(''); setSubject(''); setMarksObtained(0); setMaxMarks(100); setRemarks('');
     showToast('Result added','success');
   };
 
+  const openResultsModal = async (student: Student) => {
+    const full = await fetchFullStudent(student.id);
+    setResultsStudent(full);
+    setExamName(''); setSubject(''); setMarksObtained(0); setMaxMarks(100); setRemarks('');
+    setIsResultsModalOpen(true);
+  };
+
+  const openAttendanceModal = () => {
+    const initialMap: Record<string, 'Present'|'Absent'|'Late'> = {};
+    filteredStudents.forEach(s => {
+      const rec = s.attendance_records?.find(a => a.date === attendanceDate);
+      initialMap[s.id] = (rec?.status as any) || 'Present';
+    });
+    setAttendanceMap(initialMap);
+    setIsAttendanceModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border shadow-xs">
         <div><h2 className="text-xl font-extrabold text-slate-900"><IdCard className="w-6 h-6 inline text-primary" /> Active Student Enrolments</h2><p className="text-xs text-gray-500 mt-1">Enrol new candidates, record payments, download credentials.</p></div>
         <div className="flex flex-wrap items-center gap-2">
-          <button onClick={() => { const initMap: Record<string,'Present'|'Absent'|'Late'> = {}; filteredStudents.forEach(s => { const rec = s.attendance_records?.find(a => a.date === attendanceDate); initMap[s.id] = (rec?.status as any) || 'Present'; }); setAttendanceMap(initMap); setIsAttendanceModalOpen(true); }} className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl"><Calendar className="w-4 h-4 inline mr-1" /> Record Attendance</button>
+          <button onClick={openAttendanceModal} className="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl"><Calendar className="w-4 h-4 inline mr-1" /> Record Attendance</button>
           <button onClick={handleOpenAddModal} className="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl"><Plus className="w-4 h-4 inline mr-1" /> Enroll Student</button>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="relative col-span-1 md:col-span-2"><Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-gray-400" /><input type="text" placeholder="Search by name, roll, phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-white border border-gray-150 rounded-xl text-xs focus:outline-none" /></div>
-        <div><select value={selectedCourseFilter} onChange={(e) => setSelectedCourseFilter(e.target.value)} className="w-full px-4 py-3 bg-white border border-gray-150 rounded-xl text-xs"><option value="">All Courses</option>{courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></div>
+        <div className="relative col-span-1 md:col-span-2"><Search className="absolute left-4 top-3.5 w-4.5 h-4.5 text-gray-400" /><input type="text" placeholder="Search by name, roll, phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full pl-11 pr-4 py-3 bg-white border rounded-xl text-xs" /></div>
+        <div><select value={selectedCourseFilter} onChange={(e) => setSelectedCourseFilter(e.target.value)} className="w-full px-4 py-3 bg-white border rounded-xl text-xs"><option value="">All Courses</option>{courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}</select></div>
       </div>
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse text-xs md:text-sm">
+          <table className="w-full text-left border-collapse text-xs">
             <thead className="bg-slate-50 border-b text-[10px] font-bold text-gray-400 uppercase"><tr><th className="px-6 py-4">Roll & Profile</th><th className="px-6 py-4">Contact</th><th className="px-6 py-4">Course</th><th className="px-6 py-4">Branch/Section</th><th className="px-6 py-4">Financials</th><th className="px-6 py-4">Validity</th><th className="px-6 py-4 text-right">Actions</th></tr></thead>
             <tbody className="divide-y">
               {filteredStudents.length === 0 ? <tr><td colSpan={7} className="px-6 py-12 text-center text-gray-400">No students found.</td></tr> :
@@ -145,9 +214,9 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
                       <td className="px-6 py-4"><div className="text-[11px]"><span>Total: ₹{s.fee_amount}</span><br/><span className="text-emerald-600">Paid: ₹{s.fee_paid}</span><br/><span className={isPaidFull ? 'text-emerald-600' : 'text-rose-500'}>Due: ₹{balance}</span></div></td>
                       <td className="px-6 py-4"><span>{s.reg_date}</span><br/><span className="text-rose-500">Till: {s.valid_till}</span></td>
                       <td className="px-6 py-4 text-right"><div className="flex justify-end gap-1">
-                        <button onClick={() => downloadStudentIdPdf(s)} className="p-1.5 text-slate-500 hover:text-primary" title="ID Card"><CreditCard className="w-4 h-4" /></button>
-                        <button onClick={() => downloadFeeSlipPdf(s)} className="p-1.5 text-slate-500 hover:text-emerald-600" title="Fee Slip"><FileSpreadsheet className="w-4 h-4" /></button>
-                        <button onClick={() => { setResultsStudent(s); setIsResultsModalOpen(true); }} className="p-1.5 text-indigo-500 hover:text-indigo-600" title="Results"><BookOpen className="w-4 h-4" /></button>
+                        <button onClick={() => downloadStudentIdPdf(s, settings)} className="p-1.5 text-slate-500 hover:text-primary" title="ID Card"><CreditCard className="w-4 h-4" /></button>
+                        <button onClick={() => downloadFeeSlipPdf(s, settings)} className="p-1.5 text-slate-500 hover:text-emerald-600" title="Fee Slip"><FileSpreadsheet className="w-4 h-4" /></button>
+                        <button onClick={() => openResultsModal(s)} className="p-1.5 text-indigo-500 hover:text-indigo-600" title="Results"><BookOpen className="w-4 h-4" /></button>
                         <button onClick={() => handleOpenEditModal(s)} className="p-1.5 text-slate-500 hover:text-amber-600"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDeleteStudent(s.id, s.name)} className="p-1.5 text-slate-500 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
                       </div></td>
@@ -159,6 +228,7 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
           </table>
         </div>
       </div>
+
       {/* Student Form Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -194,6 +264,7 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
           </div>
         </div>
       )}
+
       {/* Attendance Modal */}
       {isAttendanceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -227,6 +298,7 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
           </div>
         </div>
       )}
+
       {/* Results Modal */}
       {isResultsModalOpen && resultsStudent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
@@ -240,7 +312,7 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
                     <thead className="bg-slate-50 text-gray-500 font-bold uppercase text-[9px]"><tr><th className="px-4 py-3">Exam</th><th className="px-4 py-3">Subject</th><th className="px-4 py-3 text-center">Obt.</th><th className="px-4 py-3 text-center">Max</th><th className="px-4 py-3 text-center">%</th><th className="px-4 py-3">Remarks</th><th className="px-4 py-3 text-right">Del</th></tr></thead>
                     <tbody className="divide-y">
                       {(!resultsStudent.results_records || resultsStudent.results_records.length === 0) ? (
-                        <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400 font-semibold text-[11px]">No grade records added.</td></tr>
+                        <tr><td colSpan={7} className="px-4 py-8 text-center text-gray-400">No grade records added.</td></tr>
                       ) : (
                         resultsStudent.results_records.map((rec, index) => {
                           const percentage = Math.round((rec.marks_obtained / rec.max_marks) * 100);
@@ -253,12 +325,12 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
                               <td className="px-4 py-3 text-center"><span className={`inline-block px-1.5 py-0.5 rounded font-bold font-mono text-[10px] ${percentage >= 75 ? 'bg-emerald-50 text-emerald-600' : percentage >= 50 ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-500'}`}>{percentage}%</span></td>
                               <td className="px-4 py-3 text-gray-500 italic truncate max-w-[140px]" title={rec.remarks}>{rec.remarks || '-'}</td>
                               <td className="px-4 py-3 text-right">
-                                <button onClick={() => {
+                                <button onClick={async () => {
+                                  await supabase.from("student_results").delete().eq("id", `${resultsStudent.id}_${rec.exam_name}_${rec.subject}`);
                                   const updatedRecords = resultsStudent.results_records?.filter((_, idx) => idx !== index) || [];
                                   const updatedStudent = { ...resultsStudent, results_records: updatedRecords };
-                                  const updatedList = students.map(s => s.id === resultsStudent.id ? updatedStudent : s);
                                   setResultsStudent(updatedStudent);
-                                  onSaveStudents(updatedList);
+                                  onSaveStudents(students.map(s => s.id === resultsStudent.id ? updatedStudent : s));
                                   showToast('Record removed','success');
                                 }} className="text-rose-500 hover:text-rose-700 p-1">&times;</button>
                               </td>
@@ -281,12 +353,11 @@ export const AdminStudentsTab: React.FC<AdminStudentsTabProps> = ({ courses, stu
                   <div><label className="text-[10px] font-bold text-gray-500 uppercase">Maximum Score *</label><input type="number" value={maxMarks} onChange={(e) => setMaxMarks(Number(e.target.value))} className="w-full px-3 py-2 bg-white border rounded-lg text-xs font-mono font-bold" /></div>
                   <div><label className="text-[10px] font-bold text-gray-500 uppercase">Examiner Remarks</label><input type="text" value={remarks} onChange={(e) => setRemarks(e.target.value)} className="w-full px-3 py-2 bg-white border rounded-lg text-xs" /></div>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-end gap-3">
                   <button onClick={handleAddResult} className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5"><Plus className="w-3.5 h-3.5" /> Save Result Record</button>
+                  <button onClick={() => downloadResultsPdf(resultsStudent, settings)} className="px-5 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download Grade Sheet</button>
+                  <button onClick={async () => { const verificationUrl = `${window.location.origin}/verify?roll=${encodeURIComponent(resultsStudent.roll_number)}`; const qr = await generateQrCode(verificationUrl); downloadCertificatePdf(resultsStudent, settings, qr); }} className="px-5 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5"><Download className="w-3.5 h-3.5" /> Download Certificate</button>
                 </div>
-              </div>
-              <div className="flex justify-end pt-4 border-t">
-                <button onClick={() => setIsResultsModalOpen(false)} className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-md">Close Performance Panel</button>
               </div>
             </div>
           </div>

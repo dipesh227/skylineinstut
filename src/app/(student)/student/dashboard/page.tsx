@@ -10,6 +10,7 @@ import type { Student, SiteSettings } from "@/types";
 import { downloadStudentIdPdf, downloadFeeSlipPdf, downloadCertificatePdf, downloadResultsPdf } from "@/lib/pdf";
 import { DegreeCertificate } from "@/components/DegreeCertificate";
 import Base64Image from "@/components/Base64Image";
+import { generateQrCode } from "@/lib/qr";
 import LoadingScreen from "@/components/LoadingScreen";
 
 export default function StudentDashboardPage() {
@@ -46,11 +47,8 @@ export default function StudentDashboardPage() {
     if (student && activeTab === "certificate" && student.results_records?.length) {
       (async () => {
         const verificationUrl = `${window.location.origin}/verify?roll=${encodeURIComponent(student.roll_number)}`;
-        const res = await fetch(`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(verificationUrl)}`);
-        const blob = await res.blob();
-        const reader = new FileReader();
-        reader.onloadend = () => setQrCodeBase64(reader.result as string);
-        reader.readAsDataURL(blob);
+        const qr = await generateQrCode(verificationUrl);
+        setQrCodeBase64(qr);
       })();
     }
   }, [activeTab, student]);
@@ -60,10 +58,7 @@ export default function StudentDashboardPage() {
     router.push("/student/login");
   };
 
-  // ----- SHOW BRANDED LOADING SCREEN WHILE DATA IS FETCHING -----
-  if (!student) {
-    return <LoadingScreen />;
-  }
+  if (!student) return <LoadingScreen />;
 
   const balance = student.fee_amount - student.fee_paid;
   const isPaidFull = balance <= 0;
@@ -71,7 +66,7 @@ export default function StudentDashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header unchanged */}
+      {/* Header */}
       <div className="bg-[#0F172A] text-white py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="flex items-center gap-4">
@@ -93,7 +88,7 @@ export default function StudentDashboardPage() {
       </div>
 
       <div className="max-w-6xl w-full mx-auto px-4 md:px-6 py-8 flex-1 grid grid-cols-1 lg:grid-cols-3 gap-8 text-left">
-        {/* Sidebar unchanged */}
+        {/* Left sidebar */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-2xl border border-gray-150 p-6 space-y-5 shadow-xs">
             <h3 className="text-sm font-extrabold text-slate-900 border-b border-gray-100 pb-3">Enrolment Details</h3>
@@ -121,7 +116,7 @@ export default function StudentDashboardPage() {
           </div>
         </div>
 
-        {/* Tabs */}
+        {/* Right side – Tabs */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white rounded-2xl border border-gray-150 p-2 flex flex-wrap gap-1 shadow-xs">
             {["idcard","feeslip","attendance", ...(hasResults ? ["results","certificate"] : [])].map(tab => (
@@ -142,11 +137,12 @@ export default function StudentDashboardPage() {
 
           <div className="bg-white rounded-3xl border border-gray-150 p-6 md:p-8 flex flex-col items-center justify-center text-center shadow-xs min-h-[400px]">
 
-            {/* ===== NEW ID CARD PREVIEW (unchanged) ===== */}
+            {/* ----- ID CARD (white, DB images) ----- */}
             {activeTab === 'idcard' && (
               <div className="w-full max-w-2xl space-y-6">
                 <h4 className="text-sm font-extrabold text-slate-900">Your Student ID Card</h4>
                 <div className="relative w-full aspect-[120/75] bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg select-none">
+                  {/* Logo */}
                   <div className="absolute top-[7%] left-[6%] w-[12%] aspect-square">
                     {settings?.site_logo_base64 ? (
                       <Base64Image base64={settings.site_logo_base64} alt="Logo" className="w-full h-full object-contain" width={48} height={48} />
@@ -154,6 +150,7 @@ export default function StudentDashboardPage() {
                       <GraduationCap className="w-full h-full text-primary" />
                     )}
                   </div>
+                  {/* Institute name */}
                   <div className="absolute top-[7%] left-[20%]">
                     <h5 className="text-[clamp(8px,2vw,16px)] font-extrabold font-heading text-slate-900 leading-tight">
                       {settings?.institute_name?.split(' ').slice(0,2).join(' ').toUpperCase() || 'SKYLINE INSTITUTE'}
@@ -199,7 +196,7 @@ export default function StudentDashboardPage() {
               </div>
             )}
 
-            {/* Fee Slip tab (unchanged) */}
+            {/* ----- FEE SLIP (with ledger) ----- */}
             {activeTab === 'feeslip' && (
               <div className="w-full max-w-lg space-y-6 text-left">
                 <div className="text-center"><h4 className="text-sm font-extrabold text-slate-900">Official Tuition Fee Receipt</h4></div>
@@ -213,7 +210,7 @@ export default function StudentDashboardPage() {
                     {student.fee_ledgers && student.fee_ledgers.length > 0 ? (
                       student.fee_ledgers.map(entry => (
                         <div key={entry.id} className="flex justify-between items-center text-emerald-600 bg-emerald-50/50 p-2 rounded border font-mono text-[10px]">
-                          <div><span className="font-bold block">₹{entry.amount.toLocaleString()} ({entry.payment_mode.toUpperCase()})</span><span className="text-[8px] text-gray-400">Date: {entry.date} • Registrar: {entry.collected_by}</span></div>
+                          <div><span className="font-bold block">₹{entry.amount.toLocaleString()} ({entry.payment_mode.toUpperCase()})</span><span className="text-[8px] text-gray-400">Date: {entry.date} • Registrar: {entry.collected_by}</span>{entry.remarks && <span className="block text-[8px] italic text-gray-500">"{entry.remarks}"</span>}</div>
                           <span className="text-[9px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded font-bold uppercase">Cleared</span>
                         </div>
                       ))
@@ -228,7 +225,67 @@ export default function StudentDashboardPage() {
                 </button>
               </div>
             )}
-            {/* Attendance, Results, Certificate tabs – identical to previous versions */}
+
+            {/* ----- ATTENDANCE ----- */}
+            {activeTab === 'attendance' && (
+              <div className="w-full space-y-6 text-left">
+                <div className="text-center"><h4 className="text-sm font-extrabold text-slate-900">Academic Attendance Metrics</h4></div>
+                {(() => {
+                  const total = student.attendance_records?.length || 0;
+                  const presents = student.attendance_records?.filter(a=>a.status==='Present').length || 0;
+                  const lates = student.attendance_records?.filter(a=>a.status==='Late').length || 0;
+                  const absents = student.attendance_records?.filter(a=>a.status==='Absent').length || 0;
+                  const ratio = total>0 ? Math.round(((presents+lates*0.5)/total)*100) : 100;
+                  return (
+                    <>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div className="bg-slate-50 border p-3 rounded-2xl text-center"><span className="block text-[8px] font-bold text-gray-400 uppercase">Present Ratio</span><span className={`block text-xl font-black mt-1 ${ratio>=75?'text-emerald-600':'text-rose-500'}`}>{ratio}%</span></div>
+                        <div className="bg-slate-50 border p-3 rounded-2xl text-center"><span className="block text-[8px] font-bold text-gray-400 uppercase">Total Days</span><span className="block text-xl font-black text-slate-800 mt-1">{total}</span></div>
+                        <div className="bg-slate-50 border p-3 rounded-2xl text-center"><span className="block text-[8px] font-bold text-gray-400 uppercase">Presents</span><span className="block text-xl font-black text-emerald-600 mt-1">{presents}</span></div>
+                        <div className="bg-slate-50 border p-3 rounded-2xl text-center"><span className="block text-[8px] font-bold text-gray-400 uppercase">Absents</span><span className="block text-xl font-black text-rose-500 mt-1">{absents}</span></div>
+                      </div>
+                      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden max-h-52 overflow-y-auto divide-y divide-gray-50">
+                        {student.attendance_records?.slice().reverse().map((rec, i) => (
+                          <div key={i} className="px-4 py-3 flex justify-between items-center text-xs"><span className="font-semibold text-slate-700">{rec.date}</span><span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${rec.status==='Present'?'bg-emerald-100 text-emerald-800':rec.status==='Late'?'bg-amber-100 text-amber-800':'bg-rose-100 text-rose-800'}`}>{rec.status}</span></div>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* ----- RESULTS (table) ----- */}
+            {activeTab === 'results' && hasResults && (
+              <div className="w-full space-y-6 text-left">
+                <div className="text-center"><h4 className="text-sm font-extrabold text-slate-900">Exam Grade Sheet</h4></div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead className="bg-slate-100/80 border-b text-[10px] font-extrabold text-slate-500 uppercase"><tr><th className="px-5 py-3">Exam</th><th className="px-5 py-3">Subject</th><th className="px-5 py-3 text-center">Obt.</th><th className="px-5 py-3 text-center">Max</th><th className="px-5 py-3 text-center">%</th><th className="px-5 py-3 text-right">Remarks</th></tr></thead>
+                    <tbody className="divide-y">
+                      {student.results_records?.map((r,i)=> {
+                        const pct = Math.round((r.marks_obtained/r.max_marks)*100);
+                        return (<tr key={i} className="hover:bg-slate-50"><td className="px-5 py-4 font-bold">{r.exam_name}</td><td className="px-5 py-4">{r.subject}</td><td className="px-5 py-4 text-center font-bold">{r.marks_obtained}</td><td className="px-5 py-4 text-center">{r.max_marks}</td><td className="px-5 py-4 text-center">{pct}%</td><td className="px-5 py-4 text-right italic">{r.remarks||'-'}</td></tr>);
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <button onClick={() => downloadResultsPdf(student, settings)} className="flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-md w-full">
+                  <Download className="w-4 h-4" /> Download Grade Sheet (PDF)
+                </button>
+              </div>
+            )}
+
+            {/* ----- CERTIFICATE (with QR) ----- */}
+            {activeTab === 'certificate' && hasResults && (
+              <div className="w-full space-y-6">
+                <h4 className="text-sm font-extrabold text-slate-900">Official Diploma Certificate</h4>
+                <DegreeCertificate student={student} settings={settings} qrCodeBase64={qrCodeBase64} />
+                <button onClick={() => downloadCertificatePdf(student, settings, qrCodeBase64)} className="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white text-xs font-bold rounded-xl shadow-md hover:bg-primary/95 transition-all w-full">
+                  <Download className="w-4 h-4" /> Download Certificate (PDF)
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

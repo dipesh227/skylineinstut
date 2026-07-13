@@ -1,1 +1,0 @@
-export { downloadStudentIdPdf, downloadFeeSlipPdf, downloadCertificatePdf, downloadResultsPdf } from './pdf/index';

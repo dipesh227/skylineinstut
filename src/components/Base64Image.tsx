@@ -21,19 +21,23 @@ export default function Base64Image({
   fallback,
   mimeType = 'image/jpeg',
 }: Base64ImageProps) {
-  // Determine the source
   let src: string;
+  let unoptimized = false;
+
   if (!base64) {
     src = fallback || '/placeholder.jpg';
   } else if (base64.startsWith('data:')) {
-    // Already a data URI
+    // Already a data URI – keep as is, but we could render an <img> instead of Image for data URIs if needed
     src = base64;
+    unoptimized = true;
   } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
-    // It's a regular URL – use it directly
+    // External URL – let Next.js optimize it
     src = base64;
+    unoptimized = false;
   } else {
-    // Assume pure base64 and add the data URI prefix
+    // Pure base64
     src = `data:${mimeType};base64,${base64}`;
+    unoptimized = true;
   }
 
   return (
@@ -45,7 +49,7 @@ export default function Base64Image({
       className={className}
       priority={priority}
       loading={priority ? undefined : 'lazy'}
-      unoptimized
+      unoptimized={unoptimized}
     />
   );
 }

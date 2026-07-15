@@ -1,8 +1,45 @@
 "use client";
 import { GraduationCap } from 'lucide-react';
 import { motion } from 'motion/react';
+import { usePathname } from 'next/navigation';
+
+const pageNames: Record<string, string> = {
+  '/': 'Home',
+  '/about': 'About Us',
+  '/courses': 'Courses',
+  '/gallery': 'Gallery',
+  '/team': 'Our Team',
+  '/location': 'Location',
+  '/contact': 'Contact',
+  '/verify': 'Certificate Verification',
+  '/enquiry': 'Enquiry',
+  '/student/login': 'Student Portal',
+  '/student/dashboard': 'Student Dashboard',
+  '/admin/login': 'Admin Panel',
+  '/admin/dashboard': 'Admin Dashboard',
+};
 
 export default function LoadingScreen() {
+  const pathname = usePathname();
+  // Find the best matching page name
+  let pageName = '';
+  // Exact match first
+  if (pageNames[pathname]) {
+    pageName = pageNames[pathname];
+  } else {
+    // Check sub-paths (e.g., /courses/professional-bartending-mixology)
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length > 0) {
+      const basePath = '/' + segments[0];
+      if (pageNames[basePath]) {
+        pageName = pageNames[basePath];
+      } else {
+        // Capitalize the first segment as a fallback
+        pageName = segments[0].charAt(0).toUpperCase() + segments[0].slice(1);
+      }
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-8">
       <motion.div
@@ -30,7 +67,9 @@ export default function LoadingScreen() {
         <h2 className="text-xl font-extrabold font-heading text-slate-900 tracking-tight">
           SKYLINE <span className="text-secondary">INSTITUTE</span>
         </h2>
-        <p className="text-xs text-gray-400 font-medium">Loading your experience…</p>
+        <p className="text-xs text-gray-400 font-medium">
+          {pageName ? `Loading ${pageName}…` : 'Loading…'}
+        </p>
       </motion.div>
       <div className="flex gap-1.5">
         {[0, 150, 300].map((delay, i) => (

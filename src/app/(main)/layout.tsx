@@ -19,3 +19,16 @@ export default async function MainLayout({ children }: { children: React.ReactNo
     </div>
   );
 }
+export async function headers() {
+  return [
+    {
+      source: '/(.*)',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, s-maxage=60, stale-while-revalidate=300',
+        },
+      ],
+    },
+  ];
+}

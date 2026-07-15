@@ -1,3 +1,4 @@
+"use client";
 import Link from 'next/link';
 import { GraduationCap, ArrowLeft, Home } from 'lucide-react';
 

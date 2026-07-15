@@ -139,11 +139,11 @@ export const LandingClient: React.FC<LandingClientProps> = ({
               </div>
               <motion.div initial={{ x: -30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.7 }} className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-bold">100%</div>
-                <div><p className="text-[10px] font-bold text-gray-400 uppercase">Job Track</p><p className="text-xs font-extrabold text-accent">Confirmed Placements</p></div>
+                <div><p className="text-[10px] font-bold text-gray-600 uppercase">JOB TRACK</p><p className="text-xs font-extrabold text-accent">Confirmed Placements</p></div>
               </motion.div>
               <motion.div initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.8 }} className="absolute -top-6 -right-6 bg-white p-3.5 rounded-xl shadow-lg flex items-center gap-3">
                 <Trophy className="w-5 h-5 text-secondary" />
-                <div><p className="text-[10px] font-bold text-gray-400 uppercase">Accredited</p><p className="text-xs font-extrabold text-accent">Premium Academy</p></div>
+                <div><p className="text-[10px] font-bold text-gray-600 uppercase">ACCREDITED</p><p className="text-xs font-extrabold text-accent">Premium Academy</p></div>
               </motion.div>
             </motion.div>
           </div>

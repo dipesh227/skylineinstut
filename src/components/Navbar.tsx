@@ -38,70 +38,120 @@ export const Navbar: React.FC<{ settings?: SiteSettings | null; courses?: Course
 
   return (
     <>
-      <nav className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 py-3' : 'bg-white/90 md:bg-transparent py-4 md:py-5'
-      }`}>
+      <nav
+        className={`fixed top-0 inset-x-0 z-40 transition-all duration-300 ${
+          isScrolled
+            ? 'bg-white/90 backdrop-blur-xl shadow-lg border-b border-gray-100/50 py-2'
+            : 'bg-white/80 md:bg-transparent py-3 md:py-4'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center cursor-pointer select-none group">
+            {/* Brand Logo */}
+            <Link href="/" className="flex items-center group">
               <BrandLogo size="md" theme="color" instituteName={settings?.institute_name} logoBase64={settings?.site_logo_base64} />
             </Link>
-            <div className="hidden md:flex items-center gap-6 lg:gap-8">
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-1">
               {navItems.map((item) => (
-                <Link key={item.href} href={item.href}
-                  className={`relative text-sm font-medium tracking-wide transition-colors duration-200 py-1.5 ${
-                    isActive(item.href) ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary'
-                  }`}>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'text-primary bg-primary/5'
+                      : 'text-gray-600 hover:text-primary hover:bg-gray-50'
+                  }`}
+                >
                   {item.label}
                   {isActive(item.href) && (
-                    <motion.span layoutId="navbar-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full" />
+                    <motion.span
+                      layoutId="navbar-active"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"
+                    />
                   )}
                 </Link>
               ))}
             </div>
-            <div className="hidden md:flex items-center gap-3.5">
+
+            {/* Right Actions – only Apply Now button (as original) */}
+            <div className="hidden md:flex items-center gap-3">
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => setEnquiryModalOpen(true)}
-                className="text-xs font-bold px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl shadow-md hover:shadow-xl transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 Apply Now <ArrowRight className="w-4 h-4" />
               </motion.button>
             </div>
+
+            {/* Mobile Menu Button */}
             <div className="flex items-center gap-2 md:hidden">
-              <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-xl text-gray-600 hover:text-primary hover:bg-gray-100 transition-colors">
-                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 rounded-xl text-gray-600 hover:text-primary hover:bg-gray-100 transition-colors"
+                aria-label="Toggle navigation menu"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-xl p-5 space-y-3.5 overflow-hidden"
+              className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 shadow-2xl overflow-hidden"
             >
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}
-                  className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-medium transition-colors ${
-                    isActive(item.href) ? 'bg-primary/5 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50'
-                  }`}>{item.label}</Link>
-              ))}
-              <div className="pt-3 border-t flex flex-col gap-2.5">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { setIsMobileMenuOpen(false); setEnquiryModalOpen(true); }}
-                  className="w-full py-3 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl text-xs shadow-sm"
-                >
-                  Apply Now <ArrowRight className="w-4 h-4 inline ml-1" />
-                </motion.button>
-                <Link href="/student/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs text-center">Student Login</Link>
-                <Link href="/admin/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs text-center">Staff Login</Link>
+              <div className="p-4 space-y-1">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block w-full text-left py-3 px-4 rounded-xl text-sm font-medium transition-colors ${
+                      isActive(item.href)
+                        ? 'bg-primary/5 text-primary font-bold'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-primary'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <div className="pt-3 border-t border-gray-100 space-y-2">
+                  <motion.button
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setEnquiryModalOpen(true);
+                    }}
+                    className="w-full py-3 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl text-sm shadow-md flex items-center justify-center gap-2"
+                  >
+                    Apply Now <ArrowRight className="w-4 h-4" />
+                  </motion.button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Link
+                      href="/student/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="py-2.5 border border-gray-200 rounded-xl text-xs text-center font-semibold text-gray-600 hover:bg-gray-50"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 inline mr-1" /> Student Login
+                    </Link>
+                    <Link
+                      href="/admin/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="py-2.5 border border-gray-200 rounded-xl text-xs text-center font-semibold text-gray-600 hover:bg-gray-50"
+                    >
+                      <ShieldCheck className="w-3.5 h-3.5 inline mr-1" /> Staff Login
+                    </Link>
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}

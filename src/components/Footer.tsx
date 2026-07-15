@@ -81,7 +81,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
             <h4 className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">Contact</h4>
             <ul className="space-y-3.5 text-sm text-gray-400">
               <li className="flex items-start gap-3"><MapPin className="w-5 h-5 text-secondary shrink-0 mt-0.5" /><span>{settings.contact_address}</span></li>
-              <li className="flex items-center gap-3"><Phone className="w-5 h-5 text-secondary shrink-0" /><div className="flex flex-col"><a href={`tel:${settings.contact_phone_1}`} className="hover:text-white transition-colors">{settings.contact_phone_1}</a>{settings.contact_phone_2 && <a href={`tel:${settings.contact_phone_2}`} className="hover:text-white transition-colors">{settings.contact_phone_2}</a>}</div></li>
+              <li className="flex items-center gap-3"><Phone className="w-5 h-5 text-secondary shrink-0" /><div className="flex flex-col"><a href={`tel:${settings.contact_phone_1}`} className="hover:text-white transition-colors py-2 block">{settings.contact_phone_1}</a>{settings.contact_phone_2 && <a href={`tel:${settings.contact_phone_2}`} className="hover:text-white transition-colors py-2 block">{settings.contact_phone_2}</a>}</div></li>
               <li className="flex items-center gap-3"><Mail className="w-5 h-5 text-secondary shrink-0" /><a href={`mailto:${settings.contact_email}`} className="hover:text-white transition-colors break-all">{settings.contact_email}</a></li>
             </ul>
           </div>
@@ -100,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-300">
           <span>&copy; {currentYear} {settings.institute_name || 'Skyline Institute'}. All Rights Reserved.</span>
           <div className="flex items-center gap-6 font-mono text-[11px] text-gray-400">
             <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-md"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>UTC TIME</span>
@@ -108,7 +108,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
             <Link href="/admin/login" className="flex items-center gap-1 bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white px-2.5 py-1 rounded-md"><ShieldCheck className="w-3.5 h-3.5" />Staff Login</Link>
           </div>
         </div>
-        <div className="border-t border-white/5 mt-6 pt-6 text-center text-[11px] text-gray-500">
+        <div className="border-t border-white/5 mt-6 pt-6 text-center text-[11px] text-gray-300">
           Designed, Developed & Maintained by <a href="https://dreampixeltechnology.in/" target="_blank" className="text-secondary hover:text-secondary-light hover:underline font-semibold transition-all">DreamPixel Technology</a>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { cache } from 'react';
 
-// Deduplicate Supabase fetches within a single server render
 export const fetchCourses = cache(async () => {
   const supabase = await createClient();
   const { data, error } = await supabase

@@ -7,7 +7,6 @@ export const revalidate = 30;
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
   const [settings, courses] = await Promise.all([fetchSettings(), fetchCourses()]);
-
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar settings={settings} courses={courses} />

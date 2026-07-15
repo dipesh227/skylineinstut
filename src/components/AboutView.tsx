@@ -6,29 +6,18 @@ import Base64Image from '@/components/Base64Image';
 interface AboutViewProps { settings: SiteSettings; }
 
 export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
-  // Split the about_values string into separate lines (supports newline or comma)
   const valuesList = settings.about_values
-    ? settings.about_values
-        .split(/[\n,]+/)
-        .map(v => v.trim())
-        .filter(v => v.length > 0)
+    ? settings.about_values.split(/[\n,]+/).map(v => v.trim()).filter(v => v.length > 0)
     : [];
 
-  // If no specific values are set, show a default placeholder
   const displayValues = valuesList.length > 0
     ? valuesList
-    : [
-        'Precision Craftsmanship',
-        '100% Practical Immersion',
-        'Guest‑First Empathy',
-      ];
+    : ['Precision Craftsmanship', '100% Practical Immersion', 'Guest‑First Empathy'];
 
-  // Icons for each value (alternating)
   const valueIcons = [Award, ShieldCheck, Heart];
 
   return (
     <div className="space-y-24 py-20 pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Page Header */}
       <section className="text-center max-w-3xl mx-auto space-y-4">
         <span className="text-xs font-bold text-secondary uppercase tracking-[0.2em]">Our Story</span>
         <h1 className="text-4xl md:text-5xl font-extrabold font-heading text-accent leading-tight">
@@ -39,17 +28,13 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
         </p>
       </section>
 
-      {/* Narrative Section */}
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
           <h2 className="text-2xl md:text-3xl font-extrabold font-heading text-accent">
             Training the Next Generation of Elite Beverage &amp; Service Professionals
           </h2>
-          <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-            {settings.about_story}
-          </p>
+          <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{settings.about_story}</p>
         </div>
-
         <div className="aspect-4/3 rounded-3xl bg-gray-100 overflow-hidden shadow-xl border border-gray-100 relative">
           {settings.about_image ? (
             <Base64Image base64={settings.about_image} alt="About Skyline" className="w-full h-full object-cover" />
@@ -69,7 +54,6 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
         </div>
       </section>
 
-      {/* Mission & Vision */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-primary text-white p-8 md:p-10 rounded-3xl shadow-lg">
           <div className="w-12 h-12 rounded-xl bg-secondary text-accent flex items-center justify-center mb-6">
@@ -78,7 +62,6 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
           <h3 className="text-xl font-bold font-heading mb-3 text-secondary">Our Mission</h3>
           <p className="text-gray-300 text-sm leading-relaxed">{settings.about_mission}</p>
         </div>
-
         <div className="bg-accent text-white p-8 md:p-10 rounded-3xl shadow-lg">
           <div className="w-12 h-12 rounded-xl bg-secondary text-accent flex items-center justify-center mb-6">
             <Compass className="w-6 h-6" />
@@ -88,21 +71,16 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
         </div>
       </section>
 
-      {/* Core Values (dynamic from DB) */}
       <section className="space-y-12">
         <div className="text-center max-w-xl mx-auto space-y-3">
           <span className="text-xs font-bold text-secondary uppercase tracking-[0.2em]">Our Anchors</span>
           <h2 className="text-3xl font-extrabold font-heading text-accent">The Core Principles We Live By</h2>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {displayValues.map((value, idx) => {
             const Icon = valueIcons[idx % valueIcons.length];
             return (
-              <div
-                key={idx}
-                className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center space-y-4"
-              >
+              <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center text-center space-y-4">
                 <div className="w-12 h-12 rounded-full bg-cream text-primary flex items-center justify-center">
                   <Icon className="w-6 h-6 text-primary" />
                 </div>
@@ -113,7 +91,6 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
         </div>
       </section>
 
-      {/* Timeline (still static, could be moved to DB later if needed) */}
       <section className="space-y-12 bg-cream/30 py-16 px-6 rounded-3xl border border-cream/50">
         <div className="text-center max-w-xl mx-auto space-y-3">
           <span className="text-xs font-bold text-secondary uppercase tracking-[0.2em]">Our History</span>

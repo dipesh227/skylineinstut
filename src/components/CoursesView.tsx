@@ -10,7 +10,6 @@ interface CoursesViewProps { courses: Course[]; }
 export const CoursesView: React.FC<CoursesViewProps> = ({ courses }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [badgeFilter, setBadgeFilter] = useState('all');
-
   const badges = ['all', ...Array.from(new Set(courses.map(c => c.badge).filter(Boolean)))] as string[];
   const filtered = courses.filter(c => {
     if (!c.is_active) return false;

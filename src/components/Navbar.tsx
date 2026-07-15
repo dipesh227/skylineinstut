@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, ArrowRight, ShieldCheck, GraduationCap } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { PopupEnquiryModal } from '@/components/PopupEnquiryModal';
@@ -48,19 +49,25 @@ export const Navbar: React.FC<{ settings?: SiteSettings | null; courses?: Course
             <div className="hidden md:flex items-center gap-6 lg:gap-8">
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}
-                  className={`text-sm font-medium tracking-wide transition-colors duration-200 relative py-1.5 ${
+                  className={`relative text-sm font-medium tracking-wide transition-colors duration-200 py-1.5 ${
                     isActive(item.href) ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary'
                   }`}>
                   {item.label}
-                  {isActive(item.href) && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full" />}
+                  {isActive(item.href) && (
+                    <motion.span layoutId="navbar-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full" />
+                  )}
                 </Link>
               ))}
             </div>
             <div className="hidden md:flex items-center gap-3.5">
-              <button onClick={() => setEnquiryModalOpen(true)}
-                className="text-xs font-bold px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => setEnquiryModalOpen(true)}
+                className="text-xs font-bold px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white rounded-xl shadow-sm hover:shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
+              >
                 Apply Now <ArrowRight className="w-4 h-4" />
-              </button>
+              </motion.button>
             </div>
             <div className="flex items-center gap-2 md:hidden">
               <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -70,24 +77,35 @@ export const Navbar: React.FC<{ settings?: SiteSettings | null; courses?: Course
             </div>
           </div>
         </div>
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-xl p-5 space-y-3.5 animate-slide-in">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}
-                className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-medium transition-colors ${
-                  isActive(item.href) ? 'bg-primary/5 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50'
-                }`}>{item.label}</Link>
-            ))}
-            <div className="pt-3 border-t flex flex-col gap-2.5">
-              <button onClick={() => { setIsMobileMenuOpen(false); setEnquiryModalOpen(true); }}
-                className="w-full py-3 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl text-xs shadow-sm">
-                Apply Now <ArrowRight className="w-4 h-4 inline ml-1" />
-              </button>
-              <Link href="/student/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs">Student Login</Link>
-              <Link href="/admin/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs">Staff Login</Link>
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden absolute top-full left-0 right-0 bg-white border-t shadow-xl p-5 space-y-3.5 overflow-hidden"
+            >
+              {navItems.map((item) => (
+                <Link key={item.href} href={item.href} onClick={() => setIsMobileMenuOpen(false)}
+                  className={`w-full text-left py-2.5 px-4 rounded-xl text-sm font-medium transition-colors ${
+                    isActive(item.href) ? 'bg-primary/5 text-primary font-bold' : 'text-gray-600 hover:bg-gray-50'
+                  }`}>{item.label}</Link>
+              ))}
+              <div className="pt-3 border-t flex flex-col gap-2.5">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => { setIsMobileMenuOpen(false); setEnquiryModalOpen(true); }}
+                  className="w-full py-3 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl text-xs shadow-sm"
+                >
+                  Apply Now <ArrowRight className="w-4 h-4 inline ml-1" />
+                </motion.button>
+                <Link href="/student/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs text-center">Student Login</Link>
+                <Link href="/admin/login" className="w-full py-2.5 border border-gray-200 rounded-xl text-xs text-center">Staff Login</Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
       <PopupEnquiryModal isOpen={enquiryModalOpen} onClose={() => setEnquiryModalOpen(false)} courses={courses} />
     </>

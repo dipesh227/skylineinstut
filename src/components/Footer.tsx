@@ -6,6 +6,7 @@ import type { SiteSettings } from '@/types';
 import { useToast } from '@/components/Toast';
 import { BrandLogo } from '@/components/BrandLogo';
 import { createClient } from '@/utils/supabase/client';
+import { motion } from 'motion/react';
 
 interface FooterProps { settings: SiteSettings; }
 
@@ -51,10 +52,14 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
             <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
               <input type="email" required placeholder="Your email address" value={email} onChange={(e) => setEmail(e.target.value)}
                 className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-secondary transition-all" />
-              <button type="submit" disabled={submitting}
-                className="px-6 py-3 bg-secondary hover:bg-secondary-light text-accent font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit" disabled={submitting}
+                className="px-6 py-3 bg-secondary hover:bg-secondary-light text-accent font-bold rounded-xl text-sm transition-all shadow-md flex items-center justify-center gap-2 whitespace-nowrap"
+              >
                 {submitting ? <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin"></div> : <><Send className="w-4 h-4" /> Subscribe</>}
-              </button>
+              </motion.button>
             </form>
           </div>
         </div>
@@ -63,12 +68,13 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
           <div className="space-y-4">
             <h4 className="text-xs font-bold text-secondary uppercase tracking-wider font-heading">Navigation</h4>
             <ul className="space-y-2.5 text-sm">
-              <li><Link href="/" className="text-gray-400 hover:text-white transition-colors">Home</Link></li>
-              <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">About</Link></li>
-              <li><Link href="/courses" className="text-gray-400 hover:text-white transition-colors">Programs</Link></li>
-              <li><Link href="/verify" className="text-gray-400 hover:text-white transition-colors">Verify Certificate</Link></li>
-              <li><Link href="/gallery" className="text-gray-400 hover:text-white transition-colors">Gallery</Link></li>
-              <li><Link href="/team" className="text-gray-400 hover:text-white transition-colors">Faculty</Link></li>
+              {['Home','About','Programs','Verify Certificate','Gallery','Faculty'].map((label, idx) => (
+                <li key={idx}>
+                  <motion.div whileHover={{ x: 4 }} transition={{ type: 'spring', stiffness: 400 }}>
+                    <Link href={label === 'Home' ? '/' : `/${label.toLowerCase().replace(' ','-')}`} className="text-gray-400 hover:text-white transition-colors">{label}</Link>
+                  </motion.div>
+                </li>
+              ))}
             </ul>
           </div>
           <div className="space-y-4 lg:col-span-2">

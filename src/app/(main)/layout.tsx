@@ -2,6 +2,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { FloatingActions } from '@/components/FloatingActions';
 import { fetchSettings, fetchCourses } from '@/lib/data';
+import { AnimatePresence } from 'motion/react';
 
 export const revalidate = 30;
 
@@ -10,7 +11,9 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar settings={settings} courses={courses} />
-      <main className="flex-1">{children}</main>
+      <AnimatePresence mode="wait">
+        <main className="flex-1" key={Math.random()}>{children}</main>
+      </AnimatePresence>
       {settings && <Footer settings={settings} />}
       {settings && <FloatingActions settings={settings} />}
     </div>

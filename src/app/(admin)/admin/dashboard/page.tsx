@@ -44,23 +44,30 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <aside className="w-64 bg-slate-900 text-white flex flex-col">
-        <div className="p-6 border-b border-slate-700">
+      {/* Sidebar with refined primary color */}
+      <aside className="w-64 bg-primary text-white flex flex-col">
+        <div className="p-6 border-b border-primary-light">
           <h1 className="text-lg font-heading font-bold">Skyline Admin</h1>
-          <p className="text-xs text-slate-400 mt-1">{data.settings?.institute_name || "Institute"}</p>
+          <p className="text-xs text-slate-300 mt-1">{data.settings?.institute_name || "Institute"}</p>
         </div>
         <nav className="flex-1 p-4 space-y-1">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id as TabId)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${activeTab === tab.id ? "bg-primary text-white" : "text-slate-300 hover:bg-slate-800"}`}>
-                <Icon className="w-4 h-4" /> {tab.label}
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as TabId)}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors text-left ${
+                  activeTab === tab.id ? "bg-primary-light text-white" : "text-slate-300 hover:bg-primary-light hover:text-white"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                {tab.label}
               </button>
             );
           })}
         </nav>
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-primary-light">
           <button onClick={handleLogout} className="w-full flex items-center gap-2 text-red-400 hover:text-red-300 text-sm font-semibold">
             <LogOut className="w-4 h-4" /> Logout
           </button>

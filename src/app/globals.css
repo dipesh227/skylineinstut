@@ -5,16 +5,18 @@
   --font-heading: "Cormorant Garamond", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-primary: #0A1424;
-  --color-primary-light: #1E2E44;
-  --color-secondary: #C5A25D;
-  --color-secondary-light: #E0C080;
-  --color-accent: #070D18;
-  --color-cream: #FAF7F2;
-  --color-cream-dark: #EAE3D2;
+  /* Refined Color Palette */
+  --color-primary: #1A2744;          /* slightly lighter navy – more modern */
+  --color-primary-light: #2D3A5A;    /* softer hover state */
+  --color-secondary: #C5A25D;        /* warm gold (unchanged) */
+  --color-secondary-light: #D4AF37;  /* brighter gold for hover */
+  --color-accent: #111827;           /* deep off‑black for contrast */
+  --color-cream: #F9F6F0;            /* warmer cream */
+  --color-cream-dark: #EAE0D0;       /* darker cream for cards */
+  --color-surface: #F8FAFC;          /* very light gray for backgrounds */
 }
 
-/* ----- Base & Typography ----- */
+/* Global styles that use the new palette */
 body {
   font-family: var(--font-sans);
   background-color: #ffffff;
@@ -34,50 +36,23 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-/* Smoother focus rings */
 *:focus-visible {
   outline: 2px solid var(--color-secondary);
   outline-offset: 2px;
 }
 
-/* ----- Buttons & Interactive Elements ----- */
-.btn,
-button {
+/* Buttons and interactive elements */
+.btn, button {
   transition: all 0.2s ease;
 }
-.btn-primary {
-  background-color: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  border-radius: 0.75rem;
-  padding: 0.625rem 1.5rem;
-  box-shadow: 0 4px 14px 0 rgba(10,20,36,0.1);
-}
-.btn-primary:hover {
-  background-color: var(--color-primary-light);
-  box-shadow: 0 6px 20px 0 rgba(10,20,36,0.15);
-  transform: translateY(-1px);
-}
 
-/* ----- Card & Shadow Enhancements ----- */
-.card {
-  background: white;
-  border-radius: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.03);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.04);
-  transform: translateY(-2px);
-}
-
-/* ----- Scrollbar (unchanged) ----- */
+/* scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
 ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-/* ----- Existing Animations (unchanged) ----- */
+/* animations (unchanged) */
 .animate-pulse-subtle {
   animation: pulse-subtle 2s cubic-bezier(0.4,0,0.6,1) infinite;
 }

@@ -131,7 +131,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ courses, settings }) =
   );
 };
 
-/* Small helper components */
+/* Helper components */
 const InfoCard: React.FC<{ icon: any; title: string; content?: string; children?: React.ReactNode }> = ({ icon: Icon, title, content, children }) => (
   <div className="bg-white p-6 rounded-2xl border shadow-sm flex gap-4">
     <div className="w-10 h-10 rounded-xl bg-cream text-primary flex items-center justify-center shrink-0"><Icon className="w-5 h-5" /></div>

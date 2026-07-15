@@ -10,7 +10,6 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
 
   return (
     <div className="space-y-0">
-      {/* Light Hero Section */}
       <section className="relative bg-gradient-to-br from-cream/50 via-white to-cream/30 pt-24 pb-20 px-4">
         <div className="max-w-7xl mx-auto text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/5 border border-primary/10 rounded-full text-xs font-semibold tracking-wide text-primary">
@@ -34,11 +33,8 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
         </div>
       </section>
 
-      {/* Map + Info Cards */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Map */}
           <div className="lg:col-span-8 order-2 lg:order-1">
             <div className="rounded-3xl overflow-hidden shadow-xl border border-gray-100 bg-white h-[500px] lg:h-full min-h-[400px]">
               <iframe
@@ -55,9 +51,7 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
             </div>
           </div>
 
-          {/* Info Cards */}
           <div className="lg:col-span-4 order-1 lg:order-2 space-y-6">
-            {/* Address */}
             <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                 <MapPin className="w-5 h-5" />
@@ -68,7 +62,6 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
               </div>
             </div>
 
-            {/* Contact */}
             <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <Phone className="w-5 h-5" />
@@ -91,7 +84,6 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
               </div>
             </div>
 
-            {/* Working Hours */}
             <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-100 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
                 <Clock className="w-5 h-5" />
@@ -104,7 +96,6 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
           </div>
         </div>
 
-        {/* Transit Section */}
         <section className="mt-20 space-y-10">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <span className="text-xs font-bold text-secondary uppercase tracking-[0.2em]">Getting Here</span>
@@ -139,7 +130,6 @@ export const LocationView: React.FC<LocationViewProps> = ({ settings }) => {
           </div>
         </section>
 
-        {/* Plan Your Visit */}
         <section className="mt-20 bg-cream/30 rounded-3xl p-8 md:p-12">
           <div className="max-w-3xl mx-auto space-y-6">
             <h3 className="text-2xl font-extrabold font-heading text-accent text-center">Plan Your Visit</h3>

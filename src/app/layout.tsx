@@ -57,8 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning className={`${plusJakarta.variable} ${cormorant.variable} ${jetbrains.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fwekzlrqyqpiaimriwjt.supabase.co" />
-        <link rel="dns-prefetch" href="https://fwekzlrqyqpiaimriwjt.supabase.co" />
+        <link rel="preconnect" href="https://supabase.skylineimbh.com" />
+        <link rel="dns-prefetch" href="https://supabase.skylineimbh.com" />
       </head>
       <body className="min-h-screen bg-white font-sans" suppressHydrationWarning>
         <ToastProvider>

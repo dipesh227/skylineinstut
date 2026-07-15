@@ -1,8 +1,5 @@
-/* Google Fonts now loaded via next/font in layout – no external requests */
-
 @import "tailwindcss";
 
-/* ─── Tailwind Theme (your custom colours & fonts) ─── */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Cormorant Garamond", Georgia, serif;
@@ -17,98 +14,94 @@
   --color-cream-dark: #EAE3D2;
 }
 
-/* ─── Base Typographic Improvements ─── */
+/* ----- Base & Typography ----- */
 body {
   font-family: var(--font-sans);
   background-color: #ffffff;
   color: #1e293b;
   overflow-x: hidden;
   scroll-behavior: smooth;
-
-  /* Optimise text rendering for all browsers */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-synthesis: none;
-  font-optical-sizing: auto;
+  letter-spacing: 0.01em;
 }
 
-/* Headings get extra polish */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   letter-spacing: -0.02em;
   line-height: 1.2;
 }
 
-/* ─── Custom Scrollbar (unchanged) ─── */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Smoother focus rings */
+*:focus-visible {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+/* ----- Buttons & Interactive Elements ----- */
+.btn,
+button {
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.5rem;
+  box-shadow: 0 4px 14px 0 rgba(10,20,36,0.1);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-light);
+  box-shadow: 0 6px 20px 0 rgba(10,20,36,0.15);
+  transform: translateY(-1px);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+/* ----- Card & Shadow Enhancements ----- */
+.card {
+  background: white;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 20px rgba(0,0,0,0.03);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 20px 40px rgba(0,0,0,0.04);
+  transform: translateY(-2px);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
+/* ----- Scrollbar (unchanged) ----- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-/* ─── Animations (unchanged) ─── */
+/* ----- Existing Animations (unchanged) ----- */
 .animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse-subtle 2s cubic-bezier(0.4,0,0.6,1) infinite;
 }
-
 @keyframes pulse-subtle {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.95;
-  }
+  0%,100% { transform: scale(1); opacity:1; }
+  50% { transform: scale(1.05); opacity:0.95; }
 }
 
 @keyframes infinite-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
-
 .animate-infinite-scroll {
-  display: flex;
-  width: max-content;
+  display: flex; width: max-content;
   animation: infinite-scroll 35s linear infinite;
 }
-
-.animate-infinite-scroll:hover {
-  animation-play-state: paused;
-}
+.animate-infinite-scroll:hover { animation-play-state: paused; }
 
 @keyframes infinite-scroll-slow {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
-
 .animate-infinite-scroll-slow {
-  display: flex;
-  width: max-content;
+  display: flex; width: max-content;
   animation: infinite-scroll-slow 50s linear infinite;
 }
-
-.animate-infinite-scroll-slow:hover {
-  animation-play-state: paused;
-}
+.animate-infinite-scroll-slow:hover { animation-play-state: paused; }

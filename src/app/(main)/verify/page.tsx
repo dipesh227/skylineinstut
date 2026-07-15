@@ -60,7 +60,8 @@ export default function VerifyPage() {
       };
 
       setStudent(fullStudent);
-      setHasResults(results && results.length > 0);
+      // Fix: ensure a boolean value is passed
+      setHasResults(Boolean(results && results.length > 0));
 
       if (results && results.length > 0) {
         // Generate QR code only if results exist

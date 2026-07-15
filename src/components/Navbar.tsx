@@ -45,58 +45,68 @@ export const Navbar: React.FC<{ settings?: SiteSettings | null; courses?: Course
             : 'bg-white/80 md:bg-transparent py-3 md:py-4'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            {/* Brand Logo */}
-            <Link href="/" className="flex items-center group">
-              <BrandLogo size="md" theme="color" instituteName={settings?.institute_name} logoBase64={settings?.site_logo_base64} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative flex items-center justify-between">
+          
+          {/* Absolutely positioned large logo – centered vertically in the nav */}
+          <div className="absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-50 transition-all duration-500">
+            <Link href="/" className="flex items-center">
+              <BrandLogo
+                size="md"
+                theme="color"
+                instituteName={settings?.institute_name}
+                logoBase64={settings?.site_logo_base64}
+                large={!isScrolled}
+              />
             </Link>
+          </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                    isActive(item.href)
-                      ? 'text-primary bg-primary/5'
-                      : 'text-gray-600 hover:text-primary hover:bg-gray-50'
-                  }`}
-                >
-                  {item.label}
-                  {isActive(item.href) && (
-                    <motion.span
-                      layoutId="navbar-active"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"
-                    />
-                  )}
-                </Link>
-              ))}
-            </div>
+          {/* Spacer – same width as the normal logo area to keep nav links aligned */}
+          <div className="w-[160px] md:w-[200px] shrink-0" />
 
-            {/* Right Actions – only Apply Now button (as original) */}
-            <div className="hidden md:flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => setEnquiryModalOpen(true)}
-                className="px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl shadow-md hover:shadow-xl transition-all flex items-center gap-1.5 cursor-pointer"
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive(item.href)
+                    ? 'text-primary bg-primary/5'
+                    : 'text-gray-600 hover:text-primary hover:bg-gray-50'
+                }`}
               >
-                Apply Now <ArrowRight className="w-4 h-4" />
-              </motion.button>
-            </div>
+                {item.label}
+                {isActive(item.href) && (
+                  <motion.span
+                    layoutId="navbar-active"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"
+                  />
+                )}
+              </Link>
+            ))}
+          </div>
 
-            {/* Mobile Menu Button */}
-            <div className="flex items-center gap-2 md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 rounded-xl text-gray-600 hover:text-primary hover:bg-gray-100 transition-colors"
-                aria-label="Toggle navigation menu"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
+          {/* Right Actions – Apply Now button */}
+          <div className="hidden md:flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setEnquiryModalOpen(true)}
+              className="px-5 py-2.5 bg-secondary hover:bg-secondary-light text-white font-bold rounded-xl shadow-md hover:shadow-xl transition-all flex items-center gap-1.5 cursor-pointer"
+            >
+              Apply Now <ArrowRight className="w-4 h-4" />
+            </motion.button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2 rounded-xl text-gray-600 hover:text-primary hover:bg-gray-100 transition-colors"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 

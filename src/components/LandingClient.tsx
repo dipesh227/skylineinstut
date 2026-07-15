@@ -67,9 +67,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
     <div className="space-y-24 pt-16 overflow-hidden">
       {/* Hero Section (same as before) */}
       <section className="relative bg-gradient-to-br from-slate-50 via-white to-cream/20 pt-12 md:pt-24 pb-20 overflow-hidden">
-        {settings.hero_bg_image && (
-          <div className="absolute inset-0 bg-cover bg-center opacity-10 -z-10" style={{ backgroundImage: `url(${settings.hero_bg_image})` }} />
-        )}
+        {}
         <div className="absolute inset-y-0 right-0 w-1/2 bg-cream/10 rounded-l-[100px] hidden lg:block -z-10" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

@@ -164,3 +164,28 @@ export type PageId =
   | 'admin-enquiries' | 'admin-courses' | 'admin-gallery'
   | 'admin-testimonials' | 'admin-team' | 'admin-settings'
   | 'admin-students' | 'verify-certificate';
+export interface Branch {
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface Section {
+  id: string;
+  name: string;
+  branch_id: string;
+}
+
+export interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  password_hash: string;
+  role: 'master_admin' | 'hod' | 'teacher';
+  branch_id?: string;
+  section_id?: string;
+  phone?: string;
+  signature_base64?: string;
+  is_active: boolean;
+  created_at: string;
+}

@@ -1,9 +1,8 @@
-﻿/* Google Fonts Import */
-/* Google Fonts now loaded via next/font in layout */
+/* Google Fonts now loaded via next/font in layout – no external requests */
 
 @import "tailwindcss";
 
-/* Custom Tailwind Theme */
+/* ─── Tailwind Theme (your custom colours & fonts) ─── */
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Cormorant Garamond", Georgia, serif;
@@ -18,20 +17,30 @@
   --color-cream-dark: #EAE3D2;
 }
 
-/* Base Styles */
+/* ─── Base Typographic Improvements ─── */
 body {
   font-family: var(--font-sans);
   background-color: #ffffff;
   color: #1e293b;
   overflow-x: hidden;
   scroll-behavior: smooth;
+
+  /* Optimise text rendering for all browsers */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  font-optical-sizing: auto;
 }
 
+/* Headings get extra polish */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
-/* Custom Scrollbar */
+/* ─── Custom Scrollbar (unchanged) ─── */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -50,7 +59,7 @@ h1, h2, h3, h4, h5, h6 {
   background: #a8a8a8;
 }
 
-/* Animations */
+/* ─── Animations (unchanged) ─── */
 .animate-pulse-subtle {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

@@ -21,11 +21,20 @@ export default function Base64Image({
   fallback,
   mimeType = 'image/jpeg',
 }: Base64ImageProps) {
-  const src = base64
-    ? base64.startsWith('data:')
-      ? base64
-      : `data:${mimeType};base64,${base64}`
-    : fallback || '/placeholder.jpg';
+  // Determine the source
+  let src: string;
+  if (!base64) {
+    src = fallback || '/placeholder.jpg';
+  } else if (base64.startsWith('data:')) {
+    // Already a data URI
+    src = base64;
+  } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
+    // It's a regular URL – use it directly
+    src = base64;
+  } else {
+    // Assume pure base64 and add the data URI prefix
+    src = `data:${mimeType};base64,${base64}`;
+  }
 
   return (
     <Image

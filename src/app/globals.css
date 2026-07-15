@@ -5,18 +5,15 @@
   --font-heading: "Cormorant Garamond", Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Refined Color Palette */
-  --color-primary: #1A2744;          /* slightly lighter navy – more modern */
-  --color-primary-light: #2D3A5A;    /* softer hover state */
-  --color-secondary: #C5A25D;        /* warm gold (unchanged) */
-  --color-secondary-light: #D4AF37;  /* brighter gold for hover */
-  --color-accent: #111827;           /* deep off‑black for contrast */
-  --color-cream: #F9F6F0;            /* warmer cream */
-  --color-cream-dark: #EAE0D0;       /* darker cream for cards */
-  --color-surface: #F8FAFC;          /* very light gray for backgrounds */
+  --color-primary: #1A2744;
+  --color-primary-light: #2D3A5A;
+  --color-secondary: #C5A25D;
+  --color-secondary-light: #D4AF37;
+  --color-accent: #111827;
+  --color-cream: #F9F6F0;
+  --color-cream-dark: #EAE0D0;
 }
 
-/* Global styles that use the new palette */
 body {
   font-family: var(--font-sans);
   background-color: #ffffff;
@@ -26,8 +23,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-synthesis: none;
-  letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -41,42 +37,22 @@ h1, h2, h3, h4, h5, h6 {
   outline-offset: 2px;
 }
 
-/* Buttons and interactive elements */
-.btn, button {
-  transition: all 0.2s ease;
+button, a, [role="button"] {
+  touch-action: manipulation;
 }
 
-/* scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-/* animations (unchanged) */
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s cubic-bezier(0.4,0,0.6,1) infinite;
-}
-@keyframes pulse-subtle {
-  0%,100% { transform: scale(1); opacity:1; }
-  50% { transform: scale(1.05); opacity:0.95; }
-}
+.animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+@keyframes pulse-subtle { 0%,100% { transform: scale(1); opacity:1; } 50% { transform: scale(1.05); opacity:0.95; } }
 
-@keyframes infinite-scroll {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-infinite-scroll {
-  display: flex; width: max-content;
-  animation: infinite-scroll 35s linear infinite;
-}
+@keyframes infinite-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-infinite-scroll { display: flex; width: max-content; animation: infinite-scroll 35s linear infinite; }
 .animate-infinite-scroll:hover { animation-play-state: paused; }
 
-@keyframes infinite-scroll-slow {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.animate-infinite-scroll-slow {
-  display: flex; width: max-content;
-  animation: infinite-scroll-slow 50s linear infinite;
-}
+@keyframes infinite-scroll-slow { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.animate-infinite-scroll-slow { display: flex; width: max-content; animation: infinite-scroll-slow 50s linear infinite; }
 .animate-infinite-scroll-slow:hover { animation-play-state: paused; }

@@ -9,7 +9,6 @@ interface BrandLogoProps {
   className?: string;
   instituteName?: string | null;
   logoBase64?: string | null;
-  large?: boolean;
 }
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({
@@ -19,7 +18,6 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   className = '',
   instituteName,
   logoBase64,
-  large = false,
 }) => {
   const nameStr = (instituteName || 'Skyline Institute').trim();
   const parts = nameStr.split(/\s+/);
@@ -27,16 +25,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   const secondPart = parts.slice(1, 3).join(' ').toUpperCase() || 'INSTITUTE OF MANAGEMENT,';
   const thirdPart = parts.slice(3).join(' ').toUpperCase() || 'HOSPITALITY AND BARTENDING';
 
-  const baseSize = large ? 'lg' : size;
   const sizeMap = {
     sm: { emblem: 'w-8 h-8', text: 'text-xs' },
     md: { emblem: 'w-11 h-11', text: 'text-base md:text-lg' },
     lg: { emblem: 'w-14 h-14', text: 'text-xl' },
     xl: { emblem: 'w-20 h-20', text: 'text-2xl' },
   };
-  const selected = sizeMap[baseSize];
-  // 1.5x the base 'lg' size (w-14 h-14) → w-20 h-20 (80px)
-  const emblemClass = large ? 'w-20 h-20' : selected.emblem;
+  const selected = sizeMap[size];
 
   const colors = {
     color: { skyline: 'text-primary', sub1: 'text-secondary', sub2: 'text-secondary' },
@@ -45,20 +40,18 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   }[theme];
 
   return (
-    <div className={`flex items-center gap-2.5 select-none ${className} ${
-      large ? 'drop-shadow-2xl scale-110 transition-all duration-500' : 'transition-all duration-500'
-    }`}>
+    <div className={`flex items-center gap-2.5 select-none ${className}`}>
       {logoBase64 ? (
         <Base64Image
           base64={logoBase64}
           alt={nameStr}
-          width={large ? 80 : baseSize === 'sm' ? 32 : baseSize === 'md' ? 44 : baseSize === 'lg' ? 56 : 80}
-          height={large ? 80 : baseSize === 'sm' ? 32 : baseSize === 'md' ? 44 : baseSize === 'lg' ? 56 : 80}
-          className={`${emblemClass} shrink-0 object-contain rounded-lg`}
+          width={size === 'sm' ? 32 : size === 'md' ? 44 : size === 'lg' ? 56 : 80}
+          height={size === 'sm' ? 32 : size === 'md' ? 44 : size === 'lg' ? 56 : 80}
+          className={`${selected.emblem} shrink-0 object-contain rounded-lg`}
           priority={false}
         />
       ) : (
-        <svg className={`${emblemClass} shrink-0`} viewBox="0 0 100 100" fill="none">
+        <svg className={`${selected.emblem} shrink-0`} viewBox="0 0 100 100" fill="none">
           <defs>
             <linearGradient id="b" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#1E3A8A"/><stop offset="60%" stopColor="#0F172A"/><stop offset="100%" stopColor="#020617"/></linearGradient>
             <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#F59E0B"/><stop offset="40%" stopColor="#D4AF37"/><stop offset="100%" stopColor="#B45309"/></linearGradient>
@@ -86,19 +79,19 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
         </svg>
       )}
 
-      {variant === 'full' && !large && (
+      {variant === 'full' && (
         <div className="flex flex-col justify-center leading-none text-left">
           <span className={`block font-extrabold font-heading tracking-wider ${colors.skyline} ${selected.text}`}>
             {firstPart}
           </span>
           <div className="flex flex-col mt-0.5 space-y-[1px]">
             {secondPart && (
-              <span className={`block font-extrabold tracking-[0.05em] ${colors.sub1} ${baseSize === 'sm' ? 'text-[6px]' : 'text-[7.5px] md:text-[8px]'}`}>
+              <span className={`block font-extrabold tracking-[0.05em] ${colors.sub1} ${size === 'sm' ? 'text-[6px]' : 'text-[7.5px] md:text-[8px]'}`}>
                 {secondPart}
               </span>
             )}
             {thirdPart && (
-              <span className={`block font-extrabold tracking-[0.04em] ${colors.sub2} ${baseSize === 'sm' ? 'text-[6px]' : 'text-[7.5px] md:text-[8px]'}`}>
+              <span className={`block font-extrabold tracking-[0.04em] ${colors.sub2} ${size === 'sm' ? 'text-[6px]' : 'text-[7.5px] md:text-[8px]'}`}>
                 {thirdPart}
               </span>
             )}

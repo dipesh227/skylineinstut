@@ -1,4 +1,4 @@
-import Base64Image from '@/components/Base64Image';
+import SmartImage from '@/components/SmartImage';
 
 interface SafeImageProps {
   src?: string | null;
@@ -11,7 +11,7 @@ export const SafeImage: React.FC<SafeImageProps> = ({ src, alt, className, fallb
   // If src is a base64 string, use Base64Image; otherwise regular img
   if (src && (src.startsWith('data:') || src.startsWith('http'))) {
     if (src.startsWith('data:')) {
-      return <Base64Image base64={src} alt={alt} className={className} />;
+      return <SmartImage base64={src} alt={alt} className={className} />;
     }
     return <img src={src} alt={alt} className={className} />;
   }

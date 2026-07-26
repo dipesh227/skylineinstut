@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraduationCap } from 'lucide-react';
-import Base64Image from '@/components/Base64Image';
+import SmartImage from '@/components/SmartImage';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -42,8 +42,7 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   return (
     <div className={`flex items-center gap-2.5 select-none ${className}`}>
       {logoBase64 ? (
-        <Base64Image
-          base64={logoBase64}
+        <SmartImage base64={logoBase64}
           alt={nameStr}
           width={size === 'sm' ? 32 : size === 'md' ? 44 : size === 'lg' ? 56 : 80}
           height={size === 'sm' ? 32 : size === 'md' ? 44 : size === 'lg' ? 56 : 80}

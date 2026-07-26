@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "motion/react";
-import Base64Image from "@/components/Base64Image";
+import SmartImage from "@/components/SmartImage";
 import { Star, Quote } from "lucide-react";
 import type { Testimonial } from "@/types";
 
@@ -43,8 +43,7 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
                   {testimonial.photo_url ? (
-                    <Base64Image
-                      base64={testimonial.photo_url}
+                    <SmartImage base64={testimonial.photo_url}
                       alt={testimonial.student_name}
                       width={48}
                       height={48}

@@ -4,18 +4,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "supabase.skylineimbh.com",  // if you ever host images on Supabase storage
-      },
+      { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "plus.unsplash.com" },
+      { protocol: "https", hostname: "supabase.skylineimbh.com" },
+      { protocol: "https", hostname: "*.supabase.co" },
     ],
   },
 };

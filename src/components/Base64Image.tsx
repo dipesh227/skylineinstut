@@ -22,34 +22,60 @@ export default function Base64Image({
   mimeType = 'image/jpeg',
 }: Base64ImageProps) {
   let src: string;
-  let unoptimized = false;
+  let useNextImage = true;
 
   if (!base64) {
     src = fallback || '/placeholder.jpg';
   } else if (base64.startsWith('data:')) {
-    // Already a data URI – keep as is, but we could render an <img> instead of Image for data URIs if needed
     src = base64;
-    unoptimized = true;
+    useNextImage = false; // data URIs must be unoptimized
   } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
-    // External URL – let Next.js optimize it
-    src = base64;
-    unoptimized = false;
+    // For URLs, only use next/image if the host is known (e.g., Unsplash, Supabase)
+    const allowedHosts = [
+      'images.unsplash.com',
+      'plus.unsplash.com',
+      'supabase.skylineimbh.com',
+      'supabase.co',
+      'localhost',
+    ];
+    const url = new URL(base64);
+    if (!allowedHosts.some(host => url.hostname.endsWith(host))) {
+      // For external/non‑image hosts, use a plain <img> to avoid errors
+      src = base64;
+      useNextImage = false;
+    } else {
+      src = base64;
+      useNextImage = true;
+    }
   } else {
     // Pure base64
     src = `data:${mimeType};base64,${base64}`;
-    unoptimized = true;
+    useNextImage = false;
   }
 
+  if (useNextImage) {
+    return (
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        priority={priority}
+        loading={priority ? undefined : 'lazy'}
+      />
+    );
+  }
+
+  // Fallback: plain <img> for unsupported hosts or data URIs
   return (
-    <Image
+    <img
       src={src}
       alt={alt}
       width={width}
       height={height}
       className={className}
-      priority={priority}
-      loading={priority ? undefined : 'lazy'}
-      unoptimized={unoptimized}
+      loading={priority ? 'eager' : 'lazy'}
     />
   );
 }

@@ -7,7 +7,7 @@ import {
   CheckCircle2, Flame, Coffee, Shield, Users, Zap, Globe, Camera, Search, X
 } from 'lucide-react';
 import type { SiteSettings, Course, Testimonial, GalleryImage } from '@/types';
-import Base64Image from '@/components/Base64Image';
+import SmartImage from '@/components/SmartImage';
 import { PopupEnquiryModal } from '@/components/PopupEnquiryModal';
 
 interface LandingClientProps {
@@ -151,7 +151,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
               <div className="relative bg-white p-2 rounded-2xl shadow-2xl border border-gray-100">
                 <div className="aspect-[4/3] rounded-xl overflow-hidden bg-gray-100">
                   {settings.hero_bg_image ? (
-                    <Base64Image base64={settings.hero_bg_image} alt="Skyline Training" className="w-full h-full object-cover" width={600} height={450} priority />
+                    <SmartImage base64={settings.hero_bg_image} src={settings.hero_bg_url} alt="Skyline Training" className="w-full h-full object-cover" width={600} height={450} priority />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-400 text-sm">
                       Professional Training Image
@@ -237,7 +237,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
             >
               <div className="relative aspect-video bg-gray-100 overflow-hidden">
                 {course.thumbnail_url ? (
-                  <Base64Image base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SmartImage base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
                 )}
@@ -278,7 +278,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
             </AnimatePresence>
             <div className="flex flex-col items-center">
               {activeTestimonials[activeTestimonial].photo_url ? (
-                <Base64Image base64={activeTestimonials[activeTestimonial].photo_url} alt={activeTestimonials[activeTestimonial].student_name} className="w-14 h-14 rounded-full object-cover border-2 border-secondary" />
+                <SmartImage base64={activeTestimonials[activeTestimonial].photo_url} alt={activeTestimonials[activeTestimonial].student_name} className="w-14 h-14 rounded-full object-cover border-2 border-secondary" />
               ) : (
                 <div className="w-14 h-14 rounded-full bg-primary text-secondary flex items-center justify-center text-lg font-bold border-2 border-secondary">{activeTestimonials[activeTestimonial].student_name.charAt(0)}</div>
               )}
@@ -308,7 +308,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
               {[...activeGallery, ...activeGallery].map((item, idx) => (
                 <div key={`${item.id}-${idx}`} className="relative w-72 h-72 md:w-80 md:h-80 bg-gray-100 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl cursor-pointer shrink-0 group">
                   {item.url ? (
-                    <Base64Image base64={item.url} alt={item.caption || ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                    <SmartImage base64={item.url} alt={item.caption || ''} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   ) : (
                     <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
                   )}
@@ -395,7 +395,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
               </button>
               {settings.popup_image_base64 ? (
                 <div className="aspect-16/10 bg-gray-50 overflow-hidden border-b">
-                  <Base64Image base64={settings.popup_image_base64} alt={settings.popup_title || 'Popup'} className="w-full h-full object-cover" />
+                  <SmartImage base64={settings.popup_image_base64} src={settings.popup_image_url} alt={settings.popup_title || 'Popup'} className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div className="aspect-16/10 bg-gradient-to-br from-primary to-accent flex flex-col justify-center items-center text-white p-6 border-b">

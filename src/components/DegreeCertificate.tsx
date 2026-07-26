@@ -1,5 +1,22 @@
 import React from "react";
 import { Student, SiteSettings } from "@/types";
+import SmartImage from "@/components/SmartImage";
+
+/* ---------- helper: graduation date from latest result entry ---------- */
+function getGraduationDate(student: Student): string {
+  const results = student.results_records || [];
+  if (results.length === 0) return student.reg_date || '';
+  const latest = results.reduce((prev, curr) => {
+    const prevTime = prev.created_at ? new Date(prev.created_at).getTime() : 0;
+    const currTime = curr.created_at ? new Date(curr.created_at).getTime() : 0;
+    return currTime > prevTime ? curr : prev;
+  }, results[0]);
+  if (latest?.created_at) {
+    const d = new Date(latest.created_at);
+    return d.toISOString().slice(0, 10);
+  }
+  return student.reg_date || '';
+}
 
 interface Props {
   student: Student;
@@ -13,6 +30,7 @@ export const DegreeCertificate: React.FC<Props> = ({ student, settings, qrCodeBa
   const totalObtained = results.reduce((sum, r) => sum + r.marks_obtained, 0);
   const totalMax = results.reduce((sum, r) => sum + r.max_marks, 0);
   const percentage = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 85;
+  const gradDate = getGraduationDate(student);
 
   return (
     <div className="w-full max-w-2xl mx-auto bg-[#FFFBEB] border-2 border-[#D97706] rounded-2xl p-6 text-center shadow-lg relative overflow-hidden">
@@ -28,21 +46,29 @@ export const DegreeCertificate: React.FC<Props> = ({ student, settings, qrCodeBa
       </div>
       <div className="grid grid-cols-4 gap-2 text-xs font-bold text-gray-500 border-t border-b border-gray-200 py-3 mb-4">
         <div>ROLL NUMBER<br/><span className="text-slate-900">{student.roll_number}</span></div>
-        <div>GRADUATION DATE<br/><span className="text-slate-900">{student.reg_date}</span></div>
+        <div>GRADUATION DATE<br/><span className="text-slate-900">{gradDate}</span></div>
         <div>ENROLLMENT ID<br/><span className="text-slate-900">{student.id.replace("student-","").toUpperCase()}</span></div>
         <div>STATUS<br/><span className="text-emerald-600">{percentage}% Passed</span></div>
       </div>
       <div className="flex justify-between items-center mt-4">
         <div className="text-left text-xs text-gray-500">
           <div className="font-bold">OFFICIAL SEAL</div>
-          {settings?.office_seal_base64 ? <img src={settings.office_seal_base64} alt="Seal" className="w-16 h-16 object-contain mt-1" /> : <div className="w-16 h-16 rounded-full border border-gray-300 mt-1 flex items-center justify-center text-gray-400 text-xs">SEAL</div>}
+          {settings?.office_seal_base64 ? (
+            <SmartImage src={settings.office_seal_url} base64={settings.office_seal_base64} alt="Seal" className="w-16 h-16 object-contain mt-1" />
+          ) : (
+            <div className="w-16 h-16 rounded-full border border-gray-300 mt-1 flex items-center justify-center text-gray-400 text-xs">SEAL</div>
+          )}
         </div>
         <div className="flex-1 flex justify-center">
           {qrCodeBase64 && <img src={qrCodeBase64} alt="QR Verification" className="w-20 h-20 object-contain border border-gray-200 rounded" />}
         </div>
         <div className="text-right text-xs text-gray-500">
           <div className="font-bold">AUTHORIZED REGISTRAR</div>
-          {settings?.hod_signature_base64 ? <img src={settings.hod_signature_base64} alt="Signature" className="w-24 h-12 object-contain mt-1" /> : <div className="w-24 h-8 mt-2 border-b border-gray-300" />}
+          {settings?.hod_signature_base64 ? (
+            <SmartImage src={settings.hod_signature_url} base64={settings.hod_signature_base64} alt="Signature" className="w-24 h-12 object-contain mt-1" />
+          ) : (
+            <div className="w-24 h-8 mt-2 border-b border-gray-300" />
+          )}
         </div>
       </div>
     </div>

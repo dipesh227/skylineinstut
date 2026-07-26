@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { CustomLightbox } from "@/components/CustomLightbox";
-import Base64Image from "@/components/Base64Image";
+import SmartImage from "@/components/SmartImage";
 import { GalleryImage } from "@/types";
 import { motion, AnimatePresence } from "motion/react";
 import { Camera, Search, X } from "lucide-react";
@@ -83,7 +83,7 @@ export function GalleryPageClient({ images }: GalleryPageClientProps) {
               onClick={() => openLightbox(idx)}
             >
               {img.url ? (
-                <Base64Image base64={img.url} alt={img.alt_text || "Gallery"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <SmartImage base64={img.url} alt={img.alt_text || "Gallery"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
               )}

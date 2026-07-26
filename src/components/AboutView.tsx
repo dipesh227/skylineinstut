@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Heart, Award, Bookmark, Compass, Calendar } from 'lucide-react';
 import type { SiteSettings } from '@/types';
-import Base64Image from '@/components/Base64Image';
+import SmartImage from '@/components/SmartImage';
 
 interface AboutViewProps { settings: SiteSettings; }
 
@@ -37,7 +37,7 @@ export const AboutView: React.FC<AboutViewProps> = ({ settings }) => {
         </div>
         <div className="aspect-4/3 rounded-3xl bg-gray-100 overflow-hidden shadow-xl border border-gray-100 relative">
           {settings.about_image ? (
-            <Base64Image base64={settings.about_image} alt="About Skyline" className="w-full h-full object-cover" />
+            <SmartImage base64={settings.about_image} src={settings.about_image_url} alt="About Skyline" className="w-full h-full object-cover" />
           ) : (
             <img
               src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1000&q=80"

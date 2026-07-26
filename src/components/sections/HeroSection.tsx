@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "motion/react";
-import Base64Image from "@/components/Base64Image";
+import SmartImage from "@/components/SmartImage";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { SiteSettings } from "@/types";
@@ -16,8 +16,7 @@ export default function HeroSection({ settings }: HeroProps) {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {hero_bg_image && (
         <div className="absolute inset-0 z-0">
-          <Base64Image
-            base64={hero_bg_image}
+          <SmartImage base64={hero_bg_image}
             alt="Background"
             width={1920}
             height={1080}

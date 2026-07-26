@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "motion/react";
-import Base64Image from "@/components/Base64Image";
+import SmartImage from "@/components/SmartImage";
 import Link from "next/link";
 import { Clock, IndianRupee, ArrowRight } from "lucide-react";
 import type { Course } from "@/types";
@@ -42,8 +42,7 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
             >
               <div className="relative h-52 overflow-hidden">
                 {course.thumbnail_url ? (
-                  <Base64Image
-                    base64={course.thumbnail_url}
+                  <SmartImage base64={course.thumbnail_url}
                     alt={course.title}
                     width={600}
                     height={300}

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Base64Image from "@/components/Base64Image";
+import SmartImage from "@/components/SmartImage";
 import { X } from "lucide-react";
 import type { SiteSettings } from "@/types";
 
@@ -27,8 +27,7 @@ export default function PopupModal({ settings }: { settings: SiteSettings }) {
         </button>
         {settings.popup_image_base64 && (
           <div className="w-full h-48">
-            <Base64Image
-              base64={settings.popup_image_base64}
+            <SmartImage base64={settings.popup_image_base64} src={settings.popup_image_url}
               alt={settings.popup_title || "Popup"}
               width={400}
               height={200}

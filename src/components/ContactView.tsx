@@ -4,7 +4,7 @@ import { Mail, Phone, MapPin, Clock, Send, CheckCircle } from 'lucide-react';
 import { Course, SiteSettings } from '@/types';
 import { createClient } from '@/utils/supabase/client';
 import { useToast } from '@/components/Toast';
-import Base64Image from '@/components/Base64Image';
+import SmartImage from '@/components/SmartImage';
 
 interface ContactViewProps { courses: Course[]; settings: SiteSettings; }
 
@@ -77,7 +77,7 @@ export const ContactView: React.FC<ContactViewProps> = ({ courses, settings }) =
 
       {settings.contact_image && (
         <div className="w-full h-48 md:h-64 rounded-3xl overflow-hidden border shadow-sm relative">
-          <Base64Image base64={settings.contact_image} alt="Contact Banner" className="w-full h-full object-cover" />
+          <SmartImage base64={settings.contact_image} src={settings.contact_image_url} alt="Contact Banner" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
             <span className="text-white font-heading font-extrabold text-lg md:text-2xl">Direct Contact & Admissions Desk</span>
           </div>

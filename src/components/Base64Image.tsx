@@ -20,6 +20,15 @@ const ALLOWED_HOSTS = [
   'www.google.com',
 ];
 
+function isGoogleMapsUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname === 'www.google.com' && urlObj.pathname.startsWith('/maps/');
+  } catch {
+    return false;
+  }
+}
+
 export default function Base64Image({
   base64,
   alt,
@@ -32,6 +41,7 @@ export default function Base64Image({
 }: Base64ImageProps) {
   let src: string;
   let useNextImage = false;
+  let unoptimized = false;
 
   if (!base64) {
     src = fallback || '/placeholder.jpg';
@@ -42,13 +52,17 @@ export default function Base64Image({
   } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
     try {
       const url = new URL(base64);
-      useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+      if (isGoogleMapsUrl(base64)) {
+        useNextImage = true;
+        unoptimized = true;
+      } else {
+        useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+      }
     } catch {
       useNextImage = false;
     }
     src = base64;
   } else {
-    // pure base64
     src = `data:${mimeType};base64,${base64}`;
     useNextImage = false;
   }
@@ -63,6 +77,7 @@ export default function Base64Image({
         className={className}
         priority={priority}
         loading={priority ? undefined : 'lazy'}
+        unoptimized={unoptimized}
       />
     );
   }

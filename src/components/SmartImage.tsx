@@ -20,7 +20,6 @@ const ALLOWED_HOSTS = [
   'www.google.com',
 ];
 
-// Google Maps URLs ke liye helper function
 function isGoogleMapsUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
@@ -53,7 +52,6 @@ export default function SmartImage({
     } else if (raw.startsWith('http://') || raw.startsWith('https://')) {
       try {
         const url = new URL(raw);
-        // Google Maps URLs ke liye unoptimized true karein
         if (isGoogleMapsUrl(raw)) {
           useNextImage = true;
           unoptimized = true;
@@ -65,7 +63,6 @@ export default function SmartImage({
       }
       finalSrc = raw;
     } else {
-      // pure base64 without prefix
       finalSrc = `data:image/jpeg;base64,${raw}`;
       useNextImage = false;
     }

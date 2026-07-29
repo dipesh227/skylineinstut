@@ -10,7 +10,9 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   const contentW = pageW - 2 * margin;
   let y = margin + 4;
 
-  const instituteName = (settings?.institute_name || 'SKYLINE INSTITUTE').toUpperCase();
+  const rawName = (settings?.institute_name || 'SKYLINE INSTITUTE').toUpperCase();
+  const maxNameWidth = 120; // mm – if the name is wider, we split it
+  const nameLines = doc.splitTextToSize(rawName, maxNameWidth);
   const gold = '#B8860B';
 
   // ---------- LIGHT WATERMARK ----------
@@ -18,7 +20,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.setFontSize(45);
   doc.setTextColor(235, 235, 235);
   doc.setFont('helvetica', 'bold');
-  doc.text(instituteName, pageW / 2, pageH / 2, { align: 'center', angle: -20 });
+  doc.text(rawName, pageW / 2, pageH / 2, { align: 'center', angle: -20 });
   doc.restoreGraphicsState();
 
   // ---------- OUTER BORDER ----------
@@ -35,18 +37,23 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   }
   const logoX = logoUrl ? margin + 24 : margin + 4;
 
+  // Draw the institute name line by line (if wrapped)
   doc.setFontSize(16);
   doc.setTextColor('#0F172A');
   doc.setFont('helvetica', 'bold');
-  doc.text(instituteName, logoX, y + 6);
+  let nameY = y + 6;
+  nameLines.forEach((line: string) => {
+    doc.text(line, logoX, nameY);
+    nameY += 7;   // line height
+  });
 
   doc.setFontSize(7);
   doc.setTextColor(gold);
-  doc.text('MANAGEMENT, HOSPITALITY & BARTENDING ACADEMY', logoX, y + 10);
+  doc.text('MANAGEMENT, HOSPITALITY & BARTENDING ACADEMY', logoX, nameY);
 
   doc.setFontSize(5.5);
   doc.setTextColor('#64748B');
-  doc.text(`Contact: ${settings?.contact_email || 'admissions@skylineinstitute.in'} | Phone: ${settings?.contact_phone_1 || ''}`, logoX, y + 13);
+  doc.text(`Contact: ${settings?.contact_email || 'admissions@skylineinstitute.in'} | Phone: ${settings?.contact_phone_1 || ''}`, logoX, nameY + 3);
 
   // ---------- RECEIPT HEADER (right side) ----------
   doc.setFontSize(10);
@@ -58,7 +65,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.text(`Receipt No: REC-${student.id.replace('student-', '').toUpperCase()}`, margin + contentW - 4, y + 8, { align: 'right' });
   doc.text(`Date: ${student.reg_date || ''}`, margin + contentW - 4, y + 11, { align: 'right' });
 
-  y += 20;
+  y = nameY + 8;   // move down after the letterhead
   doc.setDrawColor('#CBD5E1');
   doc.setLineWidth(0.3);
   doc.line(margin + 4, y, margin + contentW - 4, y);
@@ -91,7 +98,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.setTextColor('#FFFFFF');
   doc.setFont('helvetica', 'bold');
   doc.text('Particulars', margin + 8, y + 5.5);
-  doc.text('Amount (INR)', margin + contentW - 30, y + 5.5, { align: 'right' });
+  doc.text('Amount (Rs.)', margin + contentW - 30, y + 5.5, { align: 'right' });
   y += 8;
 
   // ---------- FEE ROWS ----------
@@ -108,7 +115,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
     doc.setFontSize(8);
     doc.setTextColor('#0F172A');
     doc.text(row.desc, margin + 8, y + 4.5);
-    doc.text(`₹ ${row.amount.toLocaleString('en-IN')}`, margin + contentW - 30, y + 4.5, { align: 'right' });
+    doc.text(`Rs. ${row.amount.toLocaleString('en-IN')}`, margin + contentW - 30, y + 4.5, { align: 'right' });
     y += 7;
   });
   y += 2;
@@ -127,7 +134,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
       doc.setFontSize(7);
       doc.setTextColor('#475569');
       doc.text(`${entry.date} - ${entry.payment_mode.toUpperCase()} (By: ${entry.collected_by})`, margin + 12, y);
-      doc.text(`₹ ${entry.amount.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
+      doc.text(`Rs. ${entry.amount.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
       y += 5;
     });
   } else {
@@ -158,18 +165,18 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.setTextColor('#475569');
   doc.setFont('helvetica', 'normal');
   doc.text('Total Gross Fee:', margin + 8, y);
-  doc.text(`₹ ${student.fee_amount.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
+  doc.text(`Rs. ${student.fee_amount.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
   y += 6;
 
   doc.text('Total Paid:', margin + 8, y);
   doc.setTextColor('#16A34A');
-  doc.text(`₹ ${totalPaid.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
+  doc.text(`Rs. ${totalPaid.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
   y += 6;
 
   doc.setTextColor(isPaid ? '#16A34A' : '#DC2626');
   doc.setFont('helvetica', 'bold');
   doc.text('Balance Due:', margin + 8, y);
-  doc.text(`₹ ${balance.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
+  doc.text(`Rs. ${balance.toLocaleString('en-IN')}`, margin + contentW - 30, y, { align: 'right' });
 
   // Paid stamp
   if (isPaid) {

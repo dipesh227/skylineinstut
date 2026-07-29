@@ -11,6 +11,15 @@ interface Base64ImageProps {
   mimeType?: string;
 }
 
+const ALLOWED_HOSTS = [
+  'images.unsplash.com',
+  'plus.unsplash.com',
+  'supabase.skylineimbh.com',
+  'supabase.co',
+  'maps.googleapis.com',
+  'www.google.com',
+];
+
 export default function Base64Image({
   base64,
   alt,
@@ -22,33 +31,24 @@ export default function Base64Image({
   mimeType = 'image/jpeg',
 }: Base64ImageProps) {
   let src: string;
-  let useNextImage = true;
+  let useNextImage = false;
 
   if (!base64) {
     src = fallback || '/placeholder.jpg';
+    useNextImage = false;
   } else if (base64.startsWith('data:')) {
     src = base64;
-    useNextImage = false; // data URIs must be unoptimized
+    useNextImage = false;
   } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
-    // For URLs, only use next/image if the host is known (e.g., Unsplash, Supabase)
-    const allowedHosts = [
-      'images.unsplash.com',
-      'plus.unsplash.com',
-      'supabase.skylineimbh.com',
-      'supabase.co',
-      'localhost',
-    ];
-    const url = new URL(base64);
-    if (!allowedHosts.some(host => url.hostname.endsWith(host))) {
-      // For external/non‑image hosts, use a plain <img> to avoid errors
-      src = base64;
+    try {
+      const url = new URL(base64);
+      useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+    } catch {
       useNextImage = false;
-    } else {
-      src = base64;
-      useNextImage = true;
     }
+    src = base64;
   } else {
-    // Pure base64
+    // pure base64
     src = `data:${mimeType};base64,${base64}`;
     useNextImage = false;
   }
@@ -67,7 +67,6 @@ export default function Base64Image({
     );
   }
 
-  // Fallback: plain <img> for unsupported hosts or data URIs
   return (
     <img
       src={src}

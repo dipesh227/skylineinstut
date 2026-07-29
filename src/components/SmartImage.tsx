@@ -1,8 +1,8 @@
 import Image from 'next/image';
 
 interface SmartImageProps {
-  src?: string | null;           // new URL (preferred)
-  base64?: string | null;        // old base64 (fallback)
+  src?: string | null;
+  base64?: string | null;
   alt: string;
   width?: number;
   height?: number;
@@ -10,6 +10,15 @@ interface SmartImageProps {
   priority?: boolean;
   fallback?: string;
 }
+
+const ALLOWED_HOSTS = [
+  'images.unsplash.com',
+  'plus.unsplash.com',
+  'supabase.skylineimbh.com',
+  'supabase.co',
+  'maps.googleapis.com',
+  'www.google.com',
+];
 
 export default function SmartImage({
   src,
@@ -22,28 +31,54 @@ export default function SmartImage({
   fallback = '/placeholder.jpg',
 }: SmartImageProps) {
   let finalSrc: string;
-  let unoptimized = false;
+  let useNextImage = false;
 
-  if (src && (src.startsWith('http') || src.startsWith('/'))) {
-    finalSrc = src;
-  } else if (base64) {
-    finalSrc = base64.startsWith('data:') ? base64 : `data:image/jpeg;base64,${base64}`;
-    unoptimized = true;
+  const raw = src || base64;
+
+  if (raw) {
+    if (raw.startsWith('data:')) {
+      finalSrc = raw;
+      useNextImage = false;
+    } else if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      try {
+        const url = new URL(raw);
+        useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+      } catch {
+        useNextImage = false;
+      }
+      finalSrc = raw;
+    } else {
+      // pure base64 without prefix
+      finalSrc = `data:image/jpeg;base64,${raw}`;
+      useNextImage = false;
+    }
   } else {
     finalSrc = fallback;
-    unoptimized = false;
+    useNextImage = false;
+  }
+
+  if (useNextImage) {
+    return (
+      <Image
+        src={finalSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        priority={priority}
+        loading={priority ? undefined : 'lazy'}
+      />
+    );
   }
 
   return (
-    <Image
+    <img
       src={finalSrc}
       alt={alt}
       width={width}
       height={height}
       className={className}
-      priority={priority}
-      loading={priority ? undefined : 'lazy'}
-      unoptimized={unoptimized}
+      loading={priority ? 'eager' : 'lazy'}
     />
   );
 }

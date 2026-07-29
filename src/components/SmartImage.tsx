@@ -20,6 +20,16 @@ const ALLOWED_HOSTS = [
   'www.google.com',
 ];
 
+// Google Maps URLs ke liye helper function
+function isGoogleMapsUrl(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.hostname === 'www.google.com' && urlObj.pathname.startsWith('/maps/');
+  } catch {
+    return false;
+  }
+}
+
 export default function SmartImage({
   src,
   base64,
@@ -32,6 +42,7 @@ export default function SmartImage({
 }: SmartImageProps) {
   let finalSrc: string;
   let useNextImage = false;
+  let unoptimized = false;
 
   const raw = src || base64;
 
@@ -42,7 +53,13 @@ export default function SmartImage({
     } else if (raw.startsWith('http://') || raw.startsWith('https://')) {
       try {
         const url = new URL(raw);
-        useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+        // Google Maps URLs ke liye unoptimized true karein
+        if (isGoogleMapsUrl(raw)) {
+          useNextImage = true;
+          unoptimized = true;
+        } else {
+          useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
+        }
       } catch {
         useNextImage = false;
       }
@@ -67,6 +84,7 @@ export default function SmartImage({
         className={className}
         priority={priority}
         loading={priority ? undefined : 'lazy'}
+        unoptimized={unoptimized}
       />
     );
   }

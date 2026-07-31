@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, BookOpen, Clock, Banknote, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Course } from '@/types';
-import SmartImage from '@/components/SmartImage';
+import Base64Image from '@/components/Base64Image';
 
 interface CoursesViewProps { courses: Course[]; }
 
@@ -53,7 +53,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ courses }) => {
             <div key={course.id} className="bg-white rounded-2xl border border-gray-100 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col overflow-hidden group hover:-translate-y-2">
               <div className="relative aspect-video bg-gray-100 overflow-hidden">
                 {course.thumbnail_url ? (
-                  <SmartImage base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Base64Image base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
                 )}

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronDown, ChevronUp, Clock, Banknote, HelpCircle, GraduationCap, ArrowRight, ShieldAlert } from 'lucide-react';
 import { Course } from '@/types';
-import SmartImage from '@/components/SmartImage';
+import Base64Image from '@/components/Base64Image';
 
 interface CourseDetailViewProps { course: Course; relatedCourses: Course[]; }
 
@@ -17,7 +17,7 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, rela
         <div className="lg:col-span-5 relative">
           <div className="relative aspect-video lg:aspect-square bg-gray-100 rounded-3xl overflow-hidden shadow-xl border">
             {course.thumbnail_url ? (
-              <SmartImage base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
+              <Base64Image base64={course.thumbnail_url} alt={course.title} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
             )}
@@ -83,7 +83,7 @@ export const CourseDetailView: React.FC<CourseDetailViewProps> = ({ course, rela
             {relatedCourses.map(rc => (
               <Link key={rc.id} href={`/courses/${rc.slug}`} className="bg-white rounded-2xl border p-5 shadow-sm hover:shadow-lg flex gap-5 items-center group">
                 <div className="w-32 aspect-square rounded-xl bg-gray-50 overflow-hidden shrink-0">
-                  {rc.thumbnail_url ? <SmartImage base64={rc.thumbnail_url} alt={rc.title} className="w-full h-full object-cover group-hover:scale-105 transition-all" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Img</div>}
+                  {rc.thumbnail_url ? <Base64Image base64={rc.thumbnail_url} alt={rc.title} className="w-full h-full object-cover group-hover:scale-105 transition-all" /> : <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Img</div>}
                 </div>
                 <div className="space-y-2 flex-1">
                   <h4 className="text-sm font-bold text-gray-900 group-hover:text-primary font-heading">{rc.title}</h4>

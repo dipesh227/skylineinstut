@@ -1,6 +1,6 @@
 import React from "react";
 import { Student, SiteSettings } from "@/types";
-import SmartImage from "@/components/SmartImage";
+import Base64Image from "@/components/Base64Image";
 
 /* ---------- helper: graduation date from latest result entry ---------- */
 function getGraduationDate(student: Student): string {
@@ -54,18 +54,18 @@ export const DegreeCertificate: React.FC<Props> = ({ student, settings, qrCodeBa
         <div className="text-left text-xs text-gray-500">
           <div className="font-bold">OFFICIAL SEAL</div>
           {settings?.office_seal_base64 ? (
-            <SmartImage src={settings.office_seal_url} base64={settings.office_seal_base64} alt="Seal" className="w-16 h-16 object-contain mt-1" />
+            <Base64Image base64={settings.office_seal_base64} alt="Seal" className="w-16 h-16 object-contain mt-1" />
           ) : (
             <div className="w-16 h-16 rounded-full border border-gray-300 mt-1 flex items-center justify-center text-gray-400 text-xs">SEAL</div>
           )}
         </div>
         <div className="flex-1 flex justify-center">
-          {qrCodeBase64 && <img src={qrCodeBase64} alt="QR Verification" className="w-20 h-20 object-contain border border-gray-200 rounded" />}
+          {qrCodeBase64 && <img alt="QR Verification" className="w-20 h-20 object-contain border border-gray-200 rounded" />}
         </div>
         <div className="text-right text-xs text-gray-500">
           <div className="font-bold">AUTHORIZED REGISTRAR</div>
           {settings?.hod_signature_base64 ? (
-            <SmartImage src={settings.hod_signature_url} base64={settings.hod_signature_base64} alt="Signature" className="w-24 h-12 object-contain mt-1" />
+            <Base64Image base64={settings.hod_signature_base64} alt="Signature" className="w-24 h-12 object-contain mt-1" />
           ) : (
             <div className="w-24 h-8 mt-2 border-b border-gray-300" />
           )}

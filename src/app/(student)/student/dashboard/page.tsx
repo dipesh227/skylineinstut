@@ -9,7 +9,7 @@ import {
 import type { Student, SiteSettings } from "@/types";
 import { downloadStudentIdPdf, downloadFeeSlipPdf, downloadCertificatePdf, downloadResultsPdf } from "@/lib/pdf";
 import { DegreeCertificate } from "@/components/DegreeCertificate";
-import SmartImage from "@/components/SmartImage";
+import Base64Image from "@/components/Base64Image";
 import { generateQrCode } from "@/lib/qr";
 import LoadingScreen from "@/components/LoadingScreen";
 
@@ -73,10 +73,8 @@ export default function StudentDashboardPage() {
       <div className="bg-primary text-white py-10 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="flex items-center gap-4">
-            {student.photo_base64 || student.photo_url ? (
-              <SmartImage 
-                src={student.photo_url} 
-                base64={student.photo_base64} 
+            {student.photo_base64 || student.photo_base64 ? (
+              <Base64Image base64={student.photo_base64} 
                 alt={student.name} 
                 width={64} height={64} 
                 className="w-16 h-16 rounded-full object-cover border-2 border-secondary" 
@@ -157,8 +155,8 @@ export default function StudentDashboardPage() {
                 <div className="relative w-full aspect-[120/75] bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg select-none">
                   {/* Logo */}
                   <div className="absolute top-[7%] left-[6%] w-[12%] aspect-square">
-                    {(settings?.logo_url || settings?.site_logo_base64) ? (
-                      <SmartImage src={settings?.logo_url} base64={settings?.site_logo_base64} alt="Logo" className="w-full h-full object-contain" width={48} height={48} />
+                    {(settings?.site_logo_base64 || settings?.site_logo_base64) ? (
+                      <Base64Image base64={settings?.site_logo_base64} alt="Logo" className="w-full h-full object-contain" width={48} height={48} />
                     ) : (
                       <GraduationCap className="w-full h-full text-primary" />
                     )}
@@ -181,16 +179,16 @@ export default function StudentDashboardPage() {
                   </div>
                   {/* Student photo (3:4) top-right */}
                   <div className="absolute top-[27%] right-[6%] w-[18%] aspect-[3/4] border border-gray-300 rounded overflow-hidden bg-gray-100">
-                    {(student.photo_url || student.photo_base64) ? (
-                      <SmartImage src={student.photo_url} base64={student.photo_base64} alt="Student" className="w-full h-full object-cover" width={72} height={96} />
+                    {(student.photo_base64 || student.photo_base64) ? (
+                      <Base64Image base64={student.photo_base64} alt="Student" className="w-full h-full object-cover" width={72} height={96} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400"><User className="w-6 h-6" /></div>
                     )}
                   </div>
                   {/* Signature (16:9) bottom-center */}
                   <div className="absolute bottom-[14%] left-[38%] w-[32%] flex flex-col items-center">
-                    {(settings?.hod_signature_url || settings?.hod_signature_base64) ? (
-                      <SmartImage src={settings?.hod_signature_url} base64={settings?.hod_signature_base64} alt="Signature" className="w-full h-auto object-contain" width={128} height={72} />
+                    {(settings?.hod_signature_base64 || settings?.hod_signature_base64) ? (
+                      <Base64Image base64={settings?.hod_signature_base64} alt="Signature" className="w-full h-auto object-contain" width={128} height={72} />
                     ) : (
                       <div className="w-full h-4 border-b border-gray-400"></div>
                     )}
@@ -198,8 +196,8 @@ export default function StudentDashboardPage() {
                   </div>
                   {/* Seal (1:1) bottom-left */}
                   <div className="absolute bottom-[8%] left-[6%] w-[14%] aspect-square flex flex-col items-center">
-                    {(settings?.office_seal_url || settings?.office_seal_base64) ? (
-                      <SmartImage src={settings?.office_seal_url} base64={settings?.office_seal_base64} alt="Seal" className="w-full h-full object-contain" width={56} height={56} />
+                    {(settings?.office_seal_base64 || settings?.office_seal_base64) ? (
+                      <Base64Image base64={settings?.office_seal_base64} alt="Seal" className="w-full h-full object-contain" width={56} height={56} />
                     ) : (
                       <div className="w-full h-full rounded-full border-2 border-gray-400 flex items-center justify-center text-[clamp(5px,0.9vw,7px)] text-gray-400">SEAL</div>
                     )}

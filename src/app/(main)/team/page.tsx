@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import SmartImage from "@/components/SmartImage";
+import Base64Image from "@/components/Base64Image";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 
 export default async function TeamPage() {
@@ -18,7 +18,7 @@ export default async function TeamPage() {
           <div key={member.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all p-6 flex flex-col items-center text-center space-y-4">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow">
               {member.image_url ? (
-                <SmartImage base64={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                <Base64Image base64={member.image_url} alt={member.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl">{member.name.charAt(0)}</div>
               )}

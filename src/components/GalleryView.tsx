@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Camera, ZoomIn, Eye, Image as ImageIcon } from 'lucide-react';
 import type { GalleryImage } from '@/types';
 import { CustomLightbox } from '@/components/CustomLightbox';
-import SmartImage from '@/components/SmartImage';
+import Base64Image from '@/components/Base64Image';
 
 interface GalleryViewProps { gallery: GalleryImage[]; }
 
@@ -46,7 +46,7 @@ export const GalleryView: React.FC<GalleryViewProps> = ({ gallery }) => {
             {activeItems.map((item, idx) => (
               <div key={item.id} onClick={() => handleImageClick(idx)} className="group relative aspect-square bg-gray-50 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100">
                 {item.url ? (
-                  <SmartImage base64={item.url} alt={item.alt_text || 'Gallery image'} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
+                  <Base64Image base64={item.url} alt={item.alt_text || 'Gallery image'} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
                 ) : (
                   <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>
                 )}

@@ -11,24 +11,6 @@ interface Base64ImageProps {
   mimeType?: string;
 }
 
-const ALLOWED_HOSTS = [
-  'images.unsplash.com',
-  'plus.unsplash.com',
-  'supabase.skylineimbh.com',
-  'supabase.co',
-  'maps.googleapis.com',
-  'www.google.com',
-];
-
-function isGoogleMapsUrl(url: string): boolean {
-  try {
-    const urlObj = new URL(url);
-    return urlObj.hostname === 'www.google.com' && urlObj.pathname.startsWith('/maps/');
-  } catch {
-    return false;
-  }
-}
-
 export default function Base64Image({
   base64,
   alt,
@@ -52,17 +34,22 @@ export default function Base64Image({
   } else if (base64.startsWith('http://') || base64.startsWith('https://')) {
     try {
       const url = new URL(base64);
-      if (isGoogleMapsUrl(base64)) {
-        useNextImage = true;
-        unoptimized = true;
-      } else {
-        useNextImage = ALLOWED_HOSTS.some(host => url.hostname.endsWith(host));
-      }
+      // Allow only known hosts for Next.js Image optimization
+      const allowedHosts = [
+        'images.unsplash.com',
+        'plus.unsplash.com',
+        'supabase.skylineimbh.com',
+        'supabase.co',
+        'maps.googleapis.com',
+        'www.google.com',
+      ];
+      useNextImage = allowedHosts.some(host => url.hostname.endsWith(host));
     } catch {
       useNextImage = false;
     }
     src = base64;
   } else {
+    // Pure base64 (without data: prefix)
     src = `data:${mimeType};base64,${base64}`;
     useNextImage = false;
   }
@@ -82,6 +69,7 @@ export default function Base64Image({
     );
   }
 
+  // Fallback: plain <img> for base64 or unsupported URLs
   return (
     <img
       src={src}

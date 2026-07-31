@@ -2,7 +2,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { GalleryImage } from '@/types';
-import SmartImage from '@/components/SmartImage';
+import Base64Image from '@/components/Base64Image';
 
 interface CustomLightboxProps { images: GalleryImage[]; currentIndex: number; isOpen: boolean; onClose: () => void; onNavigate: (index: number) => void; }
 
@@ -34,7 +34,7 @@ export const CustomLightbox: React.FC<CustomLightboxProps> = ({ images, currentI
         <button onClick={prev} className="absolute left-4 z-10 text-white/80 hover:text-white bg-black/40 hover:bg-black/60 p-3 rounded-full"><ChevronLeft className="w-6 h-6" /></button>
         <div className="max-w-full max-h-full">
           {current.url ? (
-            <SmartImage base64={current.url} alt={current.alt_text || ''} className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl border border-white/10" />
+            <Base64Image base64={current.url} alt={current.alt_text || ''} className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl border border-white/10" />
           ) : (
             <div className="bg-gray-800 text-white p-8 rounded">No Image</div>
           )}

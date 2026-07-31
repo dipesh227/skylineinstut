@@ -1,6 +1,7 @@
+"use client";
 import { createClient } from "@/utils/supabase/server";
 import Base64Image from "@/components/Base64Image";
-import * as Lucide from 'lucide-react';
+import Facebook from 'lucide-react/dist/esm/icons/facebook'; import Instagram from 'lucide-react/dist/esm/icons/instagram'; import Linkedin from 'lucide-react/dist/esm/icons/linkedin';
 
 export default async function TeamPage() {
   const supabase = await createClient();
@@ -29,9 +30,9 @@ export default async function TeamPage() {
             </div>
             <p className="text-gray-500 text-sm leading-relaxed">{member.bio}</p>
             <div className="flex gap-3">
-              {member.socials?.facebook && <a href={member.socials.facebook} target="_blank" className="text-gray-400 hover:text-primary"><Lucide.Facebook className="w-5 h-5" /></a>}
-              {member.socials?.instagram && <a href={member.socials.instagram} target="_blank" className="text-gray-400 hover:text-primary"><Lucide.Instagram className="w-5 h-5" /></a>}
-              {member.socials?.linkedin && <a href={member.socials.linkedin} target="_blank" className="text-gray-400 hover:text-primary"><Lucide.Linkedin className="w-5 h-5" /></a>}
+              {member.socials?.facebook && <a href={member.socials.facebook} target="_blank" className="text-gray-400 hover:text-primary"><Facebook className="w-5 h-5" /></a>}
+              {member.socials?.instagram && <a href={member.socials.instagram} target="_blank" className="text-gray-400 hover:text-primary"><Instagram className="w-5 h-5" /></a>}
+              {member.socials?.linkedin && <a href={member.socials.linkedin} target="_blank" className="text-gray-400 hover:text-primary"><Linkedin className="w-5 h-5" /></a>}
             </div>
           </div>
         ))}

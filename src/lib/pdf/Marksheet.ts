@@ -97,13 +97,24 @@ function generateEnrollmentId(studentId: string, rollNumber: string): string {
 
 function getGraduationDate(student: Student): string {
   const results = student.results_records || [];
-  if (results.length === 0) return student.reg_date || "";
+
+  if (results.length === 0) {
+    return student.reg_date || '';
+  }
+
   const latest = results.reduce((prev, curr) => {
-    const prevDate = prev.created_at ? new Date(prev.created_at).getTime() : 0;
-    const currDate = curr.created_at ? new Date(curr.created_at).getTime() : 0;
+    // Use any cast to avoid TypeScript error for created_at
+    const prevDate = (prev as any).created_at
+      ? new Date((prev as any).created_at).getTime()
+      : 0;
+    const currDate = (curr as any).created_at
+      ? new Date((curr as any).created_at).getTime()
+      : 0;
     return currDate > prevDate ? curr : prev;
   }, results[0]);
-  return latest?.created_at || student.reg_date || "";
+
+  return (latest as any).created_at || student.reg_date || '';
+
 }
 
 function getGrade(percentage: number): string {

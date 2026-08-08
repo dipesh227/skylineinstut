@@ -142,8 +142,8 @@ export function downloadCertificatePdf(
   doc.rect(frameMargin, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
   doc.rect(pageWidth - frameMargin - cornerSize, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
 
-  // Logo
-  const logoSrc = settings?.site_logo_base64?.trim() || settings?.logo_url?.trim() || '';
+  // Logo – only uses site_logo_base64 now (no _url fallback)
+  const logoSrc = settings?.site_logo_base64?.trim() || '';
   if (logoSrc) {
     try { doc.addImage(logoSrc, 'PNG', 18, 16, 36, 36); } catch (e) { drawEmblemBadge(doc, 36, 34); }
   } else {
@@ -260,8 +260,8 @@ export function downloadCertificatePdf(
   // Bottom row: seal, QR, signature
   const bottomY = metaYBot + 10;
 
-  // Seal
-  const sealSrc = settings?.office_seal_base64?.trim() || settings?.office_seal_url?.trim() || '';
+  // Seal – only office_seal_base64
+  const sealSrc = settings?.office_seal_base64?.trim() || '';
   if (sealSrc) {
     try { doc.addImage(sealSrc, 'PNG', 35, bottomY, 32, 32); } catch (e) { drawVectorSeal(doc, 51, bottomY + 16, 15); }
   } else {
@@ -283,14 +283,14 @@ export function downloadCertificatePdf(
     drawFallbackQrGrid(doc, qrBoxX + 2, qrBoxY + 2, qrBoxSize - 4);
   }
 
-  // Signature
-  const rightSignX = pageWidth - 65;
-  const signatureSrc = settings?.hod_signature_base64?.trim() || settings?.hod_signature_url?.trim() || '';
+  // Signature – only hod_signature_base64
+  const signatureSrc = settings?.hod_signature_base64?.trim() || '';
   if (signatureSrc) {
     try { doc.addImage(signatureSrc, 'PNG', rightSignX - 15, bottomY + 2, 30, 12); } catch (e) { drawVectorSignature(doc, rightSignX - 15, bottomY + 8); }
   } else {
     drawVectorSignature(doc, rightSignX - 15, bottomY + 8);
   }
+  const rightSignX = pageWidth - 65;
   doc.setDrawColor('#64748B');
   doc.setLineWidth(0.4);
   doc.line(rightSignX - 25, bottomY + 18, rightSignX + 25, bottomY + 18);

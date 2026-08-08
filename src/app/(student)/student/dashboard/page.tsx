@@ -450,7 +450,7 @@ export default function StudentDashboardPage() {
                 </div>
                 <div className="space-y-4">
                   {Object.entries(
-                    student.results_records.reduce(
+                    (student.results_records ?? []).reduce(
                       (acc, r) => {
                         const exam = r.exam_name || "Exam";
                         if (!acc[exam]) acc[exam] = [];

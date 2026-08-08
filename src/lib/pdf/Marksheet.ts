@@ -60,7 +60,7 @@ const RIGHT = {
 };
 
 // ============================================================
-// HELPERS (all the same, including getGraduationDate which uses created_at)
+// HELPERS
 // ============================================================
 
 function safeNumber(value: unknown, fallback = 0): number {
@@ -99,7 +99,7 @@ function getGraduationDate(student: Student): string {
   const results = student.results_records || [];
 
   if (results.length === 0) {
-    return student.reg_date || '';
+    return student.reg_date || "";
   }
 
   const latest = results.reduce((prev, curr) => {
@@ -113,8 +113,7 @@ function getGraduationDate(student: Student): string {
     return currDate > prevDate ? curr : prev;
   }, results[0]);
 
-  return (latest as any).created_at || student.reg_date || '';
-
+  return (latest as any).created_at || student.reg_date || "";
 }
 
 function getGrade(percentage: number): string {
@@ -172,7 +171,7 @@ function groupResults(student: Student): ExamGroup[] {
 }
 
 // ============================================================
-// DRAWING HELPERS (unchanged, minus drawVectorBadge)
+// DRAWING HELPERS
 // ============================================================
 
 function setText(
@@ -365,12 +364,12 @@ export function downloadResultsPdf(
   });
   drawOrnamentalDivider(doc, 64, leftX + 4, leftX + leftW - 4);
 
-  // Photo – use photo_url first, then photo_base64
+  // Photo – use only photo_base64 (since photo_url doesn't exist in Student type)
   const photoW = 22,
     photoH = 29.3;
   const photoX = leftX + leftW - photoW - 4,
     photoY = 42;
-  const photo = student.photo_url || student.photo_base64; // <-- FIXED: now tries both
+  const photo = student.photo_base64;
   if (photo) {
     addImageSafe(doc, photo, photoX, photoY, photoW, photoH, "JPEG");
   } else {
@@ -385,7 +384,7 @@ export function downloadResultsPdf(
   doc.setLineWidth(0.7);
   doc.rect(photoX, photoY, photoW, photoH, "S");
 
-  // Certificate text...
+  // Certificate text
   let cy = 73;
   setText(doc, COLORS.gray, 8.5, "times", "bold");
   doc.text("THIS IS TO CERTIFY THAT", leftCX - 7, cy, { align: "center" });
@@ -439,7 +438,7 @@ export function downloadResultsPdf(
   drawInfoItem(doc, "COMPLETED", gradDate, leftX + 8, infoY + 10, 50);
   drawInfoItem(doc, "ENROLLMENT", enrollmentId, leftX + 8, infoY + 17, 50);
 
-  // Seal & signature (unchanged, use _base64 only)
+  // Seal & signature
   const sealX = leftX + 22,
     sealY = 160;
   const sealB64 = settings?.office_seal_base64;
@@ -469,7 +468,10 @@ export function downloadResultsPdf(
   doc.setLineWidth(0.5);
   doc.line(147, 41, 147, 198);
 
-  // Right result panel (identical, no changes needed)
+  // ==========================================================
+  // RIGHT RESULT PANEL (full implementation)
+  // ==========================================================
+
   const rightX = RIGHT.x,
     rightW = RIGHT.width;
   drawRoundedBox(doc, rightX, 41, rightW, 10, COLORS.cream2, COLORS.gold, 1.5);
@@ -480,15 +482,145 @@ export function downloadResultsPdf(
   setText(doc, COLORS.gray, 5.5, "helvetica", "bold");
   doc.text(`ROLL NO: ${student.roll_number || "-"}`, rightX, 57);
   doc.text(`COURSE: ${courseName}`, rightX + 70, 57, { maxWidth: 85 });
+
   let ry = 61;
-  // ... rest of right panel remains exactly the same as the previous version (no changes there)
-  // I'll include the remainder below for completeness, but you can keep the existing right panel code.
-  // [Paste the right panel code from the previous answer, it's unchanged]
 
-  // (The rest of the right panel is identical to what was previously provided; due to length I'll omit it here, but you have it already.)
-  // Just copy the rest of the right panel from the last full code I gave you (the one with the table, cards, etc.)
+  if (groups.length === 0) {
+    drawRoundedBox(doc, rightX, ry, rightW, 30, COLORS.cream2, COLORS.border, 2);
+    setText(doc, COLORS.gray, 8, "helvetica", "bold");
+    doc.text("NO RESULT DATA AVAILABLE", rightX + rightW / 2, ry + 13, { align: "center" });
+    setText(doc, COLORS.gray2, 5.5, "helvetica", "normal");
+    doc.text("Assessment records have not been entered yet.", rightX + rightW / 2, ry + 20, { align: "center" });
+  }
 
-  // ... (keep the existing right panel code as is)
+  const tableX = rightX;
+  const tableW = rightW;
+  const subjectX = tableX;
+  const maxX = tableX + 80;
+  const obtX = tableX + 102;
+  const pctX = tableX + 124;
+
+  if (groups.length > 0) {
+    // Table header
+    doc.setFillColor(COLORS.navy);
+    doc.rect(tableX, ry, tableW, 6, "F");
+    setText(doc, COLORS.white, 5.5, "helvetica", "bold");
+    doc.text("SUBJECT / ASSESSMENT", subjectX + 2, ry + 4);
+    doc.text("MAX", maxX, ry + 4, { align: "center" });
+    doc.text("OBT.", obtX, ry + 4, { align: "center" });
+    doc.text("%", pctX, ry + 4, { align: "center" });
+    ry += 6;
+
+    groups.forEach((group) => {
+      // Exam heading
+      doc.setFillColor("#C59228");
+      doc.rect(tableX, ry, tableW, 5, "F");
+      setText(doc, COLORS.white, 5.5, "helvetica", "bold");
+      doc.text(group.exam.toUpperCase(), tableX + 2, ry + 3.4);
+      ry += 5;
+
+      group.subjects.forEach((subject) => {
+        const subjectLines = doc.splitTextToSize(subject.subject, 72);
+        const rowHeight = Math.max(5.2, subjectLines.length * 3.3 + 1.5);
+
+        doc.setFillColor(rowHeight > 6 ? "#FFFDF7" : COLORS.white);
+        doc.rect(tableX, ry, tableW, rowHeight, "F");
+        doc.setDrawColor(COLORS.border);
+        doc.setLineWidth(0.18);
+        doc.rect(tableX, ry, tableW, rowHeight, "S");
+
+        setText(doc, COLORS.navy2, 5.2, "helvetica", "normal");
+        doc.text(subjectLines, subjectX + 2, ry + 3.5);
+
+        setText(doc, COLORS.navy, 5.5, "helvetica", "bold");
+        doc.text(formatNumber(subject.max), maxX, ry + 3.5, { align: "center" });
+        doc.text(formatNumber(subject.obt), obtX, ry + 3.5, { align: "center" });
+        const subjectPct = subject.max > 0 ? (subject.obt / subject.max) * 100 : 0;
+        doc.text(`${subjectPct.toFixed(0)}`, pctX, ry + 3.5, { align: "center" });
+
+        ry += rowHeight;
+      });
+
+      // Category total
+      const catMax = group.subjects.reduce((sum, item) => sum + item.max, 0);
+      const catObt = group.subjects.reduce((sum, item) => sum + item.obt, 0);
+
+      doc.setFillColor(COLORS.goldPale);
+      doc.rect(tableX, ry, tableW, 5, "F");
+      setText(doc, COLORS.navy, 5.5, "helvetica", "bold");
+      doc.text("TOTAL", subjectX + 2, ry + 3.4);
+      doc.text(formatNumber(catMax), maxX, ry + 3.4, { align: "center" });
+      doc.text(formatNumber(catObt), obtX, ry + 3.4, { align: "center" });
+      const catPct = catMax > 0 ? (catObt / catMax) * 100 : 0;
+      doc.text(`${catPct.toFixed(0)}`, pctX, ry + 3.4, { align: "center" });
+      ry += 6;
+    });
+
+    // Grand total
+    doc.setFillColor(COLORS.navy);
+    doc.rect(tableX, ry, tableW, 7, "F");
+    setText(doc, COLORS.white, 6.2, "helvetica", "bold");
+    doc.text("GRAND TOTAL", subjectX + 2, ry + 4.6);
+    doc.text(formatNumber(grandMax), maxX, ry + 4.6, { align: "center" });
+    doc.text(formatNumber(grandObt), obtX, ry + 4.6, { align: "center" });
+    doc.text(`${percentage.toFixed(1)}`, pctX, ry + 4.6, { align: "center" });
+    ry += 10;
+  }
+
+  // Result summary cards
+  const cardY = Math.min(Math.max(ry, 116), 145);
+  const cardGap = 3;
+  const cardW = (rightW - cardGap * 2) / 3;
+
+  // Percentage
+  drawRoundedBox(doc, rightX, cardY, cardW, 22, COLORS.cream2, COLORS.gold, 1.5);
+  setText(doc, COLORS.gold, 5, "helvetica", "bold");
+  doc.text("PERCENTAGE", rightX + cardW / 2, cardY + 6, { align: "center" });
+  setText(doc, COLORS.navy, 12, "helvetica", "bold");
+  doc.text(`${percentage.toFixed(1)}%`, rightX + cardW / 2, cardY + 16, { align: "center" });
+
+  // Grade
+  const gradeX = rightX + cardW + cardGap;
+  drawRoundedBox(doc, gradeX, cardY, cardW, 22, COLORS.cream2, COLORS.gold, 1.5);
+  setText(doc, COLORS.gold, 5, "helvetica", "bold");
+  doc.text("GRADE", gradeX + cardW / 2, cardY + 6, { align: "center" });
+  setText(doc, COLORS.navy, 12, "helvetica", "bold");
+  doc.text(grade, gradeX + cardW / 2, cardY + 16, { align: "center" });
+
+  // Status
+  const statusX = gradeX + cardW + cardGap;
+  drawRoundedBox(
+    doc,
+    statusX,
+    cardY,
+    cardW,
+    22,
+    COLORS.cream2,
+    status === "PASS" ? COLORS.green : COLORS.red,
+    1.5,
+  );
+  setText(doc, status === "PASS" ? COLORS.green : COLORS.red, 5, "helvetica", "bold");
+  doc.text("FINAL STATUS", statusX + cardW / 2, cardY + 6, { align: "center" });
+  setText(doc, status === "PASS" ? COLORS.green : COLORS.red, 10, "helvetica", "bold");
+  doc.text(status, statusX + cardW / 2, cardY + 16, { align: "center" });
+
+  // Classification
+  const classificationY = cardY + 27;
+  drawRoundedBox(doc, rightX, classificationY, rightW, 11, COLORS.cream2, COLORS.border, 1.5);
+  setText(doc, COLORS.gray, 5.5, "helvetica", "bold");
+  doc.text("CLASSIFICATION", rightX + 4, classificationY + 7);
+  setText(doc, COLORS.navy, 7, "helvetica", "bold");
+  doc.text(classification, rightX + 43, classificationY + 7);
+
+  // Right footer
+  setText(doc, COLORS.gray2, 4.5, "helvetica", "normal");
+  doc.text(
+    "This document is electronically generated and is valid subject to institutional records.",
+    rightX,
+    195,
+  );
+  setText(doc, COLORS.gold, 5, "helvetica", "bold");
+  doc.text("OFFICIAL ACADEMIC RECORD", rightX + rightW, 195, { align: "right" });
 
   // Save
   const safeRoll = String(student.roll_number || "STUDENT").replace(

@@ -277,8 +277,8 @@ export const LandingClient: React.FC<LandingClientProps> = ({
               </motion.blockquote>
             </AnimatePresence>
             <div className="flex flex-col items-center">
-              {activeTestimonials[activeTestimonial].photo_base64 ? (
-                <Base64Image base64={activeTestimonials[activeTestimonial].photo_base64} alt={activeTestimonials[activeTestimonial].student_name} className="w-14 h-14 rounded-full object-cover border-2 border-secondary" />
+              {activeTestimonials[activeTestimonial].photo_url ? (
+                <Base64Image base64={activeTestimonials[activeTestimonial].photo_url} alt={activeTestimonials[activeTestimonial].student_name} className="w-14 h-14 rounded-full object-cover border-2 border-secondary" />
               ) : (
                 <div className="w-14 h-14 rounded-full bg-primary text-secondary flex items-center justify-center text-lg font-bold border-2 border-secondary">{activeTestimonials[activeTestimonial].student_name.charAt(0)}</div>
               )}

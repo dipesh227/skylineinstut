@@ -42,8 +42,9 @@ export default function TestimonialsSection({ testimonials }: TestimonialsSectio
               <Quote className="absolute top-4 right-4 text-secondary/20 w-8 h-8" />
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-200">
-                  {testimonial.photo_base64 ? (
-                    <Base64Image base64={testimonial.photo_base64}
+                  {testimonial.photo_url ? (
+                    <Base64Image
+                      base64={testimonial.photo_url}
                       alt={testimonial.student_name}
                       width={48}
                       height={48}

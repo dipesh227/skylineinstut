@@ -13,8 +13,8 @@ export const SafeImage: React.FC<SafeImageProps> = ({ src, alt, className, fallb
     if (src.startsWith('data:')) {
       return <Base64Image base64={src} alt={alt} className={className} />;
     }
-    return <img alt={alt} className={className} />;
+    return <img src={src} alt={alt} className={className} />;
   }
-  if (fallbackSrc) return <img alt={alt} className={className} />;
+  if (fallbackSrc) return <img src={fallbackSrc} alt={alt} className={className} />;
   return <div className={`bg-gray-200 flex items-center justify-center text-gray-400 text-xs ${className}`}>No Image</div>;
 };

@@ -1,7 +1,6 @@
-"use client";
 import { createClient } from "@/utils/supabase/server";
 import Base64Image from "@/components/Base64Image";
-import Facebook from 'lucide-react/dist/esm/icons/facebook'; import Instagram from 'lucide-react/dist/esm/icons/instagram'; import Linkedin from 'lucide-react/dist/esm/icons/linkedin';
+import { Facebook, Instagram, Linkedin } from "lucide-react";
 
 export default async function TeamPage() {
   const supabase = await createClient();

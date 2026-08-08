@@ -2,11 +2,9 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Install dependencies (cached layer)
 COPY package.json package-lock.json* ./
-RUN npm ci --legacy-peer-deps
+RUN npm ci
 
-# Copy source and build
 COPY . .
 RUN npm run build
 
@@ -16,7 +14,6 @@ WORKDIR /app
 
 ENV NODE_ENV production
 
-# Copy only what's needed for running
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./

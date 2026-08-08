@@ -27,7 +27,8 @@ export default function PopupModal({ settings }: { settings: SiteSettings }) {
         </button>
         {settings.popup_image_base64 && (
           <div className="w-full h-48">
-            <Base64Image base64={settings.popup_image_base64}
+            <Base64Image
+              base64={settings.popup_image_base64}
               alt={settings.popup_title || "Popup"}
               width={400}
               height={200}

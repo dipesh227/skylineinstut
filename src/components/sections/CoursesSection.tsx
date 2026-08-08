@@ -42,7 +42,8 @@ export default function CoursesSection({ courses }: CoursesSectionProps) {
             >
               <div className="relative h-52 overflow-hidden">
                 {course.thumbnail_url ? (
-                  <Base64Image base64={course.thumbnail_url}
+                  <Base64Image
+                    base64={course.thumbnail_url}
                     alt={course.title}
                     width={600}
                     height={300}

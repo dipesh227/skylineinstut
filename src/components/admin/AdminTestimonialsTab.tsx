@@ -22,7 +22,7 @@ export const AdminTestimonialsTab: React.FC<AdminTestimonialsTabProps> = ({ test
 
   const handleOpenEdit = (t: Testimonial) => {
     setEditingTestimonial(t); setName(t.student_name); setCourseTitle(t.course_name); setRating(t.rating);
-    setText(t.text); setPlacementHotel(t.placement_hotel||''); setAvatarUrl(t.photo_base64||''); setIsActive(t.is_active);
+    setText(t.text); setPlacementHotel(t.placement_hotel||''); setAvatarUrl(t.photo_url||''); setIsActive(t.is_active);
     setIsAdding(false);
   };
 
@@ -85,7 +85,7 @@ export const AdminTestimonialsTab: React.FC<AdminTestimonialsTabProps> = ({ test
         {testimonials.map(t => (
           <div key={t.id} className="bg-white rounded-2xl border p-5 shadow-sm hover:shadow-md flex flex-col justify-between space-y-4">
             <div className="flex items-center gap-3">
-              <img src={t.photo_base64} alt={t.student_name} className="w-10 h-10 rounded-full object-cover border" />
+              <img src={t.photo_url} alt={t.student_name} className="w-10 h-10 rounded-full object-cover border" />
               <div><h4 className="text-xs font-bold text-gray-900">{t.student_name}</h4><span className="text-[10px] font-bold text-primary">{t.course_name}</span></div>
             </div>
             <div className="flex gap-1">{Array.from({length: t.rating}).map((_,i)=><Star key={i} className="w-3.5 h-3.5 text-secondary fill-secondary"/>)}</div>

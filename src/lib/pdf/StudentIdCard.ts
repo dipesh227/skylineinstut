@@ -34,7 +34,7 @@ export function downloadStudentIdPdf(student: Student, settings?: SiteSettings |
   doc.triangle(cardW, 16, cardW - 18, 16, cardW, 12, 'F');
 
   // ---------- INSTITUTE LOGO (top left of the navy area) ----------
-  const logoUrl = settings?.logo_url || settings?.site_logo_base64;
+  const logoUrl = settings?.site_logo_base64;   // FIXED: only base64
   if (logoUrl) {
     addImageSafe(doc, logoUrl, 3, 2, 10, 10);
   }
@@ -50,8 +50,8 @@ export function downloadStudentIdPdf(student: Student, settings?: SiteSettings |
   doc.setLineWidth(0.8);
   doc.circle(emblemX, emblemY, emblemRadius + 0.8, 'FD');
 
-  // Student photo
-  const photoData = student.photo_url || student.photo_base64;
+  // Student photo – use only photo_base64
+  const photoData = student.photo_base64;
   if (photoData) {
     try {
       addImageSafe(doc, photoData, emblemX - emblemRadius, emblemY - emblemRadius, emblemRadius * 2, emblemRadius * 2);
@@ -150,7 +150,7 @@ export function downloadStudentIdPdf(student: Student, settings?: SiteSettings |
 
   // HOD Signature (right side, just above the navy footer)
   const sigY = footerY - 8;
-  const sigSrc = settings?.hod_signature_url || settings?.hod_signature_base64;
+  const sigSrc = settings?.hod_signature_base64;   // FIXED: only base64
   if (sigSrc) {
     addImageSafe(doc, sigSrc, cardW - 28, sigY, 24, 10);
   } else {
@@ -161,7 +161,7 @@ export function downloadStudentIdPdf(student: Student, settings?: SiteSettings |
   }
 
   // Office Seal (left side, just above the navy footer)
-  const sealSrc = settings?.office_seal_url || settings?.office_seal_base64;
+  const sealSrc = settings?.office_seal_base64;   // FIXED: only base64
   if (sealSrc) {
     addImageSafe(doc, sealSrc, 4, sigY, 14, 14);
   } else {

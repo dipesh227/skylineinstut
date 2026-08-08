@@ -477,7 +477,7 @@ export default function StudentDashboardPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                          {records.map((rec, i) => (
+                         {(records ?? []).map((rec, i) => (
                             <tr key={i} className="text-slate-700">
                               <td className="px-4 py-2">{rec.subject}</td>
                               <td className="px-4 py-2 text-center font-medium">

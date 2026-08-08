@@ -142,7 +142,7 @@ export function downloadCertificatePdf(
   doc.rect(frameMargin, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
   doc.rect(pageWidth - frameMargin - cornerSize, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
 
-  // Logo – only uses site_logo_base64 now (no _url fallback)
+  // Logo
   const logoSrc = settings?.site_logo_base64?.trim() || '';
   if (logoSrc) {
     try { doc.addImage(logoSrc, 'PNG', 18, 16, 36, 36); } catch (e) { drawEmblemBadge(doc, 36, 34); }
@@ -283,14 +283,14 @@ export function downloadCertificatePdf(
     drawFallbackQrGrid(doc, qrBoxX + 2, qrBoxY + 2, qrBoxSize - 4);
   }
 
-  // Signature – only hod_signature_base64
+  // Signature – fixed: declare rightSignX before using it
+  const rightSignX = pageWidth - 65;
   const signatureSrc = settings?.hod_signature_base64?.trim() || '';
   if (signatureSrc) {
     try { doc.addImage(signatureSrc, 'PNG', rightSignX - 15, bottomY + 2, 30, 12); } catch (e) { drawVectorSignature(doc, rightSignX - 15, bottomY + 8); }
   } else {
     drawVectorSignature(doc, rightSignX - 15, bottomY + 8);
   }
-  const rightSignX = pageWidth - 65;
   doc.setDrawColor('#64748B');
   doc.setLineWidth(0.4);
   doc.line(rightSignX - 25, bottomY + 18, rightSignX + 25, bottomY + 18);
@@ -300,4 +300,194 @@ export function downloadCertificatePdf(
   doc.text('AUTHORIZED REGISTRAR', rightSignX, bottomY + 23, { align: 'center' });
 
   doc.save(`Official_Degree_Certificate_${student.roll_number}.pdf`);
+}
+
+// ---- Optional: for preview component ----
+export function generateCertificateBlob(
+  student: Student,
+  settings?: SiteSettings | null,
+  qrCodeBase64?: string
+): Blob {
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const pageWidth = 297;
+  const pageHeight = 210;
+  const centerX = pageWidth / 2;
+
+  // Background
+  doc.setFillColor('#FAF7EE');
+  doc.rect(0, 0, pageWidth, pageHeight, 'F');
+
+  // Golden borders
+  const goldColor = '#B8860B';
+  const frameMargin = 8;
+  const innerMargin = 11;
+  doc.setDrawColor(goldColor);
+  doc.setLineWidth(1.8);
+  doc.rect(frameMargin, frameMargin, pageWidth - frameMargin * 2, pageHeight - frameMargin * 2, 'S');
+  doc.setLineWidth(0.4);
+  doc.rect(innerMargin, innerMargin, pageWidth - innerMargin * 2, pageHeight - innerMargin * 2, 'S');
+
+  // Corner accents
+  const cornerSize = 4;
+  doc.setFillColor(goldColor);
+  doc.rect(frameMargin, frameMargin, cornerSize, cornerSize, 'F');
+  doc.rect(pageWidth - frameMargin - cornerSize, frameMargin, cornerSize, cornerSize, 'F');
+  doc.rect(frameMargin, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
+  doc.rect(pageWidth - frameMargin - cornerSize, pageHeight - frameMargin - cornerSize, cornerSize, cornerSize, 'F');
+
+  // Logo
+  const logoSrc = settings?.site_logo_base64?.trim() || '';
+  if (logoSrc) {
+    try { doc.addImage(logoSrc, 'PNG', 18, 16, 36, 36); } catch (e) { drawEmblemBadge(doc, 36, 34); }
+  } else {
+    drawEmblemBadge(doc, 36, 34);
+  }
+
+  // Header
+  doc.setTextColor('#8B0000');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('ACADEMIC REGISTRY & GRADUATION SERVICES', centerX, 24, { align: 'center' });
+
+  // Institute name
+  doc.setTextColor('#0F172A');
+  doc.setFont('times', 'bold');
+  doc.setFontSize(22);
+  doc.text('SKYLINE INSTITUTE OF MANAGEMENT,', centerX, 33, { align: 'center' });
+  doc.text('HOSPITALITY & BARTENDING', centerX, 41, { align: 'center' });
+
+  // Subtitle
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.setTextColor('#B8860B');
+  doc.text('MANAGEMENT, HOSPITALITY & BARTENDING ACADEMY', centerX, 48, { align: 'center' });
+
+  // Divider
+  drawFiligreeDivider(doc, centerX, 53);
+
+  // Narrative
+  doc.setTextColor('#475569');
+  doc.setFont('times', 'italic');
+  doc.setFontSize(13);
+  doc.text('This is to officially certify that the candidate', centerX, 64, { align: 'center' });
+
+  // Student name
+  doc.setTextColor('#0F172A');
+  doc.setFont('times', 'bold');
+  doc.setFontSize(28);
+  const studentName = student.name.toUpperCase();
+  doc.text(studentName, centerX, 78, { align: 'center' });
+  const nameWidth = doc.getTextWidth(studentName);
+  const underlineW = Math.max(nameWidth + 20, 160);
+  doc.setDrawColor('#CBD5E1');
+  doc.setLineWidth(0.4);
+  doc.line(centerX - underlineW / 2, 82, centerX + underlineW / 2, 82);
+
+  doc.setFont('times', 'italic');
+  doc.setFontSize(13);
+  doc.text('has successfully completed the professional program', centerX, 92, { align: 'center' });
+
+  // Course box
+  const courseText = student.course_name.toUpperCase();
+  doc.setFont('times', 'bold');
+  doc.setFontSize(15);
+  const courseWidth = doc.getTextWidth(courseText);
+  const boxWidth = Math.max(courseWidth + 24, 140);
+  const boxHeight = 13;
+  const boxX = centerX - boxWidth / 2;
+  const boxY = 98;
+  doc.setFillColor('#FFFDF2');
+  doc.rect(boxX, boxY, boxWidth, boxHeight, 'F');
+  doc.setDrawColor('#B8860B');
+  doc.setLineWidth(0.8);
+  doc.rect(boxX, boxY, boxWidth, boxHeight, 'S');
+  doc.setLineWidth(0.3);
+  doc.rect(boxX + 0.8, boxY + 0.8, boxWidth - 1.6, boxHeight - 1.6, 'S');
+  doc.setTextColor('#0F172A');
+  doc.text(courseText, centerX, boxY + 8.5, { align: 'center' });
+
+  // Metadata rows
+  const metaYTop = 118;
+  const metaYBot = metaYTop + 22;
+  const metaYTextLabel = metaYTop + 6;
+  const metaYTextVal = metaYTop + 15;
+  doc.setDrawColor('#94A3B8');
+  doc.setLineWidth(0.4);
+  doc.line(35, metaYTop, pageWidth - 35, metaYTop);
+  doc.line(35, metaYBot, pageWidth - 35, metaYBot);
+
+  const col1X = 62; const col2X = 118; const col3X = 178; const col4X = 238;
+  doc.setDrawColor('#CBD5E1');
+  doc.setLineWidth(0.3);
+  doc.line(90, metaYTop + 2, 90, metaYBot - 2);
+  doc.line(148, metaYTop + 2, 148, metaYBot - 2);
+  doc.line(208, metaYTop + 2, 208, metaYBot - 2);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor('#64748B');
+  doc.text('ROLL NUMBER', col1X, metaYTextLabel, { align: 'center' });
+  doc.text('DATE', col2X, metaYTextLabel, { align: 'center' });
+  doc.text('ENROLLMENT ID', col3X, metaYTextLabel, { align: 'center' });
+  doc.text('GRADE', col4X, metaYTextLabel, { align: 'center' });
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor('#0F172A');
+  doc.text(student.roll_number, col1X, metaYTextVal, { align: 'center' });
+  doc.text(student.reg_date || '2026-07-20', col2X, metaYTextVal, { align: 'center' });
+  doc.text(generateEnrollmentId(student.id, student.roll_number), col3X, metaYTextVal, { align: 'center' });
+
+  // Grade
+  const certResults = student.results_records || [];
+  let totalObt = 0, totalMax = 0;
+  certResults.forEach(r => { totalObt += Number(r.marks_obtained || 0); totalMax += Number(r.max_marks || 0); });
+  const percentage = totalMax > 0 ? (totalObt / totalMax) * 100 : 100;
+  const grade = getGrade(percentage);
+  doc.setTextColor('#15803D');
+  doc.text(grade, col4X, metaYTextVal, { align: 'center' });
+
+  // Bottom row
+  const bottomY = metaYBot + 10;
+
+  // Seal
+  const sealSrc = settings?.office_seal_base64?.trim() || '';
+  if (sealSrc) {
+    try { doc.addImage(sealSrc, 'PNG', 35, bottomY, 32, 32); } catch (e) { drawVectorSeal(doc, 51, bottomY + 16, 15); }
+  } else {
+    drawVectorSeal(doc, 51, bottomY + 16, 15);
+  }
+
+  // QR code
+  const qrBoxSize = 34;
+  const qrBoxX = centerX - qrBoxSize / 2;
+  const qrBoxY = bottomY - 2;
+  doc.setFillColor('#FFFFFF');
+  doc.rect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 'F');
+  doc.setDrawColor('#B8860B');
+  doc.setLineWidth(0.6);
+  doc.rect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 'S');
+  if (qrCodeBase64) {
+    try { doc.addImage(qrCodeBase64, 'PNG', qrBoxX + 1.5, qrBoxY + 1.5, qrBoxSize - 3, qrBoxSize - 3); } catch (e) { drawFallbackQrGrid(doc, qrBoxX + 2, qrBoxY + 2, qrBoxSize - 4); }
+  } else {
+    drawFallbackQrGrid(doc, qrBoxX + 2, qrBoxY + 2, qrBoxSize - 4);
+  }
+
+  // Signature – declare rightSignX first
+  const rightSignX = pageWidth - 65;
+  const signatureSrc = settings?.hod_signature_base64?.trim() || '';
+  if (signatureSrc) {
+    try { doc.addImage(signatureSrc, 'PNG', rightSignX - 15, bottomY + 2, 30, 12); } catch (e) { drawVectorSignature(doc, rightSignX - 15, bottomY + 8); }
+  } else {
+    drawVectorSignature(doc, rightSignX - 15, bottomY + 8);
+  }
+  doc.setDrawColor('#64748B');
+  doc.setLineWidth(0.4);
+  doc.line(rightSignX - 25, bottomY + 18, rightSignX + 25, bottomY + 18);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor('#334155');
+  doc.text('AUTHORIZED REGISTRAR', rightSignX, bottomY + 23, { align: 'center' });
+
+  return doc.output('blob');
 }

@@ -29,7 +29,7 @@ export const LandingClient: React.FC<LandingClientProps> = ({
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
 
   const activeTestimonials = testimonials.filter(t => t.is_active);
-  const activeCourses = courses.filter(c => c.is_active).slice(0, 3);
+  const activeCourses = courses.filter(c => c.is_active).slice(0, 4);
   const activeGallery = gallery.filter(g => g.is_active);
 
   const [stats, setStats] = useState({ students: 0, placements: 0, coaches: 0, years: 0 });

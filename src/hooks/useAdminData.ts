@@ -66,10 +66,52 @@ export function useAdminData() {
     const ids = updated.map(c => c.id).filter(Boolean);
     if (ids.length > 0) await supabase.from("courses").delete().not("id", "in", `(${ids.join(",")})`);
   };
-  const saveGallery = async (updated: GalleryImage[]) => {
-    await supabase.from("gallery").upsert(updated);
-    setGallery(updated);
-  };
+const saveGallery = async (updated: GalleryImage[]) => {
+  // 1. Upsert all images in the new array
+  const upsertPayload = updated.map(img => ({
+    id: img.id,
+    url: img.url,
+    category: img.category || 'general',
+    caption: img.caption || '',
+    alt_text: img.alt_text || '',
+    display_order: img.display_order || 0,
+    is_active: img.is_active ?? true,
+  }));
+
+  const { error: upsertError } = await supabase
+    .from('gallery')
+    .upsert(upsertPayload);
+
+  if (upsertError) {
+    console.error('Gallery upsert failed:', upsertError);
+    return;
+  }
+
+  // 2. Delete images that are NOT in the updated list
+  const updatedIds = updated.map(img => img.id);
+  if (updatedIds.length > 0) {
+    // Delete rows where id is NOT IN updatedIds
+    const { error: deleteError } = await supabase
+      .from('gallery')
+      .delete()
+      .filter('id', 'not.in', updatedIds);   // ✅ correct syntax
+
+    if (deleteError) {
+      console.error('Gallery delete failed:', deleteError);
+      return;
+    }
+  } else {
+    // If no images are passed, delete all (array is empty)
+    const { error: deleteAllError } = await supabase
+      .from('gallery')
+      .delete()
+      .neq('id', '0'); // delete all (safe fallback)
+    if (deleteAllError) console.error('Delete all failed:', deleteAllError);
+  }
+
+  // 3. Update local state
+  setGallery(updated);
+};
   const saveTestimonials = async (updated: Testimonial[]) => {
     await supabase.from("testimonials").upsert(updated);
     setTestimonials(updated);

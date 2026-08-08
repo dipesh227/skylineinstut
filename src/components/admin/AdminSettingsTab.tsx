@@ -322,11 +322,7 @@ export const AdminSettingsTab: React.FC<AdminSettingsTabProps> = ({ settings, on
             <Save className="w-4.5 h-4.5 text-secondary" /> Save Live Configurations
           </button>
         </form>
-        <div className="mt-6 text-right">
-          <button onClick={handleFactoryReset} className="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs transition-all shadow cursor-pointer">
-            Reload Defaults from Database
-          </button>
-        </div>
+        
       </div>
     </div>
   );

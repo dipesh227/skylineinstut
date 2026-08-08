@@ -31,7 +31,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.rect(margin + 2, margin + 2, contentW - 4, pageH - 2 * (margin + 2), 'S');
 
   // ---------- LETTERHEAD: LOGO + INSTITUTE NAME ----------
-  const logoUrl = settings?.logo_url || settings?.site_logo_base64;
+  const logoUrl = settings?.site_logo_base64;   // FIXED: only base64 used
   if (logoUrl) {
     addImageSafe(doc, logoUrl, margin + 4, y, 16, 16);
   }
@@ -195,7 +195,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.line(margin + 4, y, margin + contentW - 4, y);
   y += 8;
 
-  const sealB64 = settings?.office_seal_url || settings?.office_seal_base64;
+  const sealB64 = settings?.office_seal_base64;   // FIXED: only base64
   if (sealB64) {
     addImageSafe(doc, sealB64, margin + 22, y, 24, 24);
   } else {
@@ -206,7 +206,7 @@ export function downloadFeeSlipPdf(student: Student, settings?: SiteSettings | n
   doc.setFont('helvetica', 'bold');
   doc.text('OFFICIAL SEAL', margin + 34, y + 27, { align: 'center' });
 
-  const sigB64 = settings?.hod_signature_url || settings?.hod_signature_base64;
+  const sigB64 = settings?.hod_signature_base64;   // FIXED: only base64
   if (sigB64) {
     addImageSafe(doc, sigB64, margin + contentW - 80, y + 4, 32, 18);
   } else {
